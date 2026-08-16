@@ -1,12 +1,12 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Briefcase } from "lucide-react";
 import { api } from "../lib/api";
 import { PageHeader } from "../components/PageHeader";
 import { Button } from "../components/Button";
 import { Field, Select, TextArea, TextInput } from "../components/Field";
+import { CATEGORIES, getSubcategoriesByCategoryId } from "../lib/categories";
 
-const CATEGORIES = ["Software", "Design", "Data", "Marketing", "Product", "IT", "Writing", "Video", "Other"];
 const TYPES = ["Full-time", "Part-time", "Contract", "Internship", "Freelance"];
 
 export default function PostJob() {
@@ -15,12 +15,17 @@ export default function PostJob() {
   const [company, setCompany] = useState("");
   const [location, setLocation] = useState("Remote");
   const [type, setType] = useState("Contract");
-  const [category, setCategory] = useState("Software");
+  const [categoryId, setCategoryId] = useState(CATEGORIES[0].id);
+  const [subcategory, setSubcategory] = useState("");
   const [salary, setSalary] = useState("");
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const availableSubcategories = useMemo(() => {
+    return getSubcategoriesByCategoryId(categoryId);
+  }, [categoryId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -32,7 +37,7 @@ export default function PostJob() {
         company,
         location,
         type,
-        category,
+        category: subcategory || categoryId,
         salary: parseInt(salary, 10),
         description,
         requirements: requirements
@@ -72,12 +77,26 @@ export default function PostJob() {
             </Select>
           </Field>
           <Field label="Category">
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              {CATEGORIES.map((c) => (
-                <option key={c}>{c}</option>
+            <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+              {CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
               ))}
             </Select>
           </Field>
+          {availableSubcategories.length > 0 && (
+            <Field label="Subcategory">
+              <Select value={subcategory} onChange={(e) => setSubcategory(e.target.value)}>
+                <option value="">Select subcategory</option>
+                {availableSubcategories.map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          )}
           <Field label="Salary (KSh)">
             <TextInput type="number" min={0} placeholder="e.g. 120000" value={salary} onChange={(e) => setSalary(e.target.value)} />
           </Field>

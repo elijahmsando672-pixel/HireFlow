@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, Sparkles } from "lucide-react";
 import { api } from "../lib/api";
@@ -8,17 +8,22 @@ import { GigCard } from "../components/GigCard";
 import { EmptyState } from "../components/EmptyState";
 import { Field, Select, TextInput } from "../components/Field";
 import { Button } from "../components/Button";
-
-const CATEGORIES = ["All", "Software", "Design", "Data", "Marketing", "Product", "IT", "Writing", "Video", "Other"];
+import { CATEGORIES, getSubcategoriesByCategoryId } from "../lib/categories";
 
 export default function Gigs() {
   const [gigs, setGigs] = useState<Gig[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
+  const [categoryId, setCategoryId] = useState("All");
+  const [subcategory, setSubcategory] = useState("All");
   const [sort, setSort] = useState("newest");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const availableSubcategories = useMemo(() => {
+    if (categoryId === "All") return [];
+    return getSubcategoriesByCategoryId(categoryId);
+  }, [categoryId]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 350);
@@ -26,11 +31,19 @@ export default function Gigs() {
   }, [search]);
 
   useEffect(() => {
+    setSubcategory("All");
+  }, [categoryId]);
+
+  useEffect(() => {
     let cancelled = false;
     setLoading(true);
     const filters: Record<string, string> = {};
     if (debouncedSearch) filters.search = debouncedSearch;
-    if (category !== "All") filters.category = category;
+    if (subcategory !== "All") {
+      filters.category = subcategory;
+    } else if (categoryId !== "All") {
+      filters.category = categoryId;
+    }
     if (sort !== "newest") filters.sort = sort;
 
     api
@@ -42,7 +55,7 @@ export default function Gigs() {
     return () => {
       cancelled = true;
     };
-  }, [debouncedSearch, category, sort]);
+  }, [debouncedSearch, categoryId, subcategory, sort]);
 
   return (
     <div className="animate-fade-up">
@@ -55,7 +68,7 @@ export default function Gigs() {
       />
 
       <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <Field label="Search">
               <div className="relative">
@@ -65,12 +78,27 @@ export default function Gigs() {
             </Field>
           </div>
           <Field label="Category">
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              {CATEGORIES.map((c) => (
-                <option key={c}>{c}</option>
+            <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+              <option value="All">All Categories</option>
+              {CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
               ))}
             </Select>
           </Field>
+          {availableSubcategories.length > 0 && (
+            <Field label="Subcategory">
+              <Select value={subcategory} onChange={(e) => setSubcategory(e.target.value)}>
+                <option value="All">All Subcategories</option>
+                {availableSubcategories.map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          )}
           <Field label="Sort">
             <Select value={sort} onChange={(e) => setSort(e.target.value)}>
               <option value="newest">Newest first</option>

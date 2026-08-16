@@ -6,8 +6,8 @@ import { PageHeader } from "../components/PageHeader";
 import { JobCard } from "../components/JobCard";
 import { EmptyState } from "../components/EmptyState";
 import { Field, Select, TextInput } from "../components/Field";
+import { CATEGORIES, getSubcategoriesByCategoryId } from "../lib/categories";
 
-const CATEGORIES = ["All", "Software", "Design", "Data", "Marketing", "Product", "IT", "Writing", "Video", "Other"];
 const TYPES = ["All", "Full-time", "Part-time", "Contract", "Internship", "Freelance"];
 const LOCATIONS = ["All", "Nairobi", "Mombasa", "Nakuru", "Remote"];
 
@@ -16,11 +16,17 @@ export default function Jobs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
+  const [categoryId, setCategoryId] = useState("All");
+  const [subcategory, setSubcategory] = useState("All");
   const [type, setType] = useState("All");
   const [location, setLocation] = useState("All");
   const [sort, setSort] = useState("newest");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const availableSubcategories = useMemo(() => {
+    if (categoryId === "All") return [];
+    return getSubcategoriesByCategoryId(categoryId);
+  }, [categoryId]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 350);
@@ -28,11 +34,19 @@ export default function Jobs() {
   }, [search]);
 
   useEffect(() => {
+    setSubcategory("All");
+  }, [categoryId]);
+
+  useEffect(() => {
     let cancelled = false;
     setLoading(true);
     const filters: Record<string, string> = {};
     if (debouncedSearch) filters.search = debouncedSearch;
-    if (category !== "All") filters.category = category;
+    if (subcategory !== "All") {
+      filters.category = subcategory;
+    } else if (categoryId !== "All") {
+      filters.category = categoryId;
+    }
     if (type !== "All") filters.type = type;
     if (location !== "All") filters.location = location;
     if (sort === "salary") filters.sort = "salary";
@@ -46,7 +60,7 @@ export default function Jobs() {
     return () => {
       cancelled = true;
     };
-  }, [debouncedSearch, category, type, location, sort]);
+  }, [debouncedSearch, categoryId, subcategory, type, location, sort]);
 
   const filtered = useMemo(() => jobs, [jobs]);
 
@@ -56,7 +70,7 @@ export default function Jobs() {
 
       {/* Filters */}
       <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
           <div className="lg:col-span-2">
             <Field label="Search">
               <div className="relative">
@@ -66,12 +80,27 @@ export default function Jobs() {
             </Field>
           </div>
           <Field label="Category">
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              {CATEGORIES.map((c) => (
-                <option key={c}>{c}</option>
+            <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+              <option value="All">All Categories</option>
+              {CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
               ))}
             </Select>
           </Field>
+          {availableSubcategories.length > 0 && (
+            <Field label="Subcategory">
+              <Select value={subcategory} onChange={(e) => setSubcategory(e.target.value)}>
+                <option value="All">All Subcategories</option>
+                {availableSubcategories.map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          )}
           <Field label="Type">
             <Select value={type} onChange={(e) => setType(e.target.value)}>
               {TYPES.map((t) => (
@@ -86,7 +115,7 @@ export default function Jobs() {
               ))}
             </Select>
           </Field>
-          <div className="md:col-span-2 lg:col-span-5">
+          <div className="md:col-span-2 lg:col-span-6">
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">
                 {loading ? "Searching…" : `${filtered.length} job${filtered.length === 1 ? "" : "s"} found`}

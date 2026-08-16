@@ -118,9 +118,103 @@ function normalizeLocation(rawLocation, remoteFlag) {
     return { location, remote: isRemote };
 }
 
+// Mapping from external category names to our subcategories
+const CATEGORY_MAP = {
+    // Development & IT
+    "web-development": "Web Development",
+    "frontend": "Web Development",
+    "frontend-development": "Web Development",
+    "mobile-development": "Mobile Development",
+    "android": "Mobile Development",
+    "ios": "Mobile Development",
+    "software-development": "Software Development",
+    "backend": "Software Development",
+    "backend-development": "Software Development",
+    "fullstack": "Software Development",
+    "full-stack": "Software Development",
+    "data": "Data & AI",
+    "data-science": "Data & AI",
+    "machine-learning": "Data & AI",
+    "ai": "Data & AI",
+    "artificial-intelligence": "Data & AI",
+    "cybersecurity": "Cybersecurity",
+    "security": "Cybersecurity",
+    "it": "IT & Networking",
+    "networking": "IT & Networking",
+    "devops": "Cloud & DevOps",
+    "cloud": "Cloud & DevOps",
+    "aws": "Cloud & DevOps",
+    "database": "Database & Data Engineering",
+    "data-engineering": "Database & Data Engineering",
+    "sql": "Database & Data Engineering",
+    "game-development": "Game Development",
+    "gaming": "Game Development",
+    "blockchain": "Blockchain & Web3",
+    "web3": "Blockchain & Web3",
+    "crypto": "Blockchain & Web3",
+
+    // Design & Creative
+    "design": "Graphic Design",
+    "graphic-design": "Graphic Design",
+    "ui": "UI/UX Design",
+    "ux": "UI/UX Design",
+    "ui-ux": "UI/UX Design",
+    "uiux": "UI/UX Design",
+    "video": "Video & Animation",
+    "animation": "Video & Animation",
+    "photography": "Photography",
+    "3d": "3D Design",
+    "3d-design": "3D Design",
+    "music": "Music & Audio",
+    "audio": "Music & Audio",
+
+    // Writing & Languages
+    "writing": "Writing",
+    "copywriting": "Copywriting",
+    "editing": "Editing & Proofreading",
+    "proofreading": "Editing & Proofreading",
+    "translation": "Translation",
+    "transcription": "Transcription",
+
+    // Marketing & Sales
+    "marketing": "Digital Marketing",
+    "digital-marketing": "Digital Marketing",
+    "seo": "SEO",
+    "social-media": "Social Media",
+    "sales": "Sales",
+    "lead-generation": "Lead Generation",
+
+    // Business
+    "consulting": "Consulting",
+    "finance": "Finance & Accounting",
+    "accounting": "Finance & Accounting",
+    "hr": "HR & Recruiting",
+    "recruiting": "HR & Recruiting",
+    "legal": "Legal",
+    "business": "Business Administration",
+
+    // Admin & Support
+    "virtual-assistance": "Virtual Assistance",
+    "data-entry": "Data Entry",
+    "customer-service": "Customer Service",
+    "technical-support": "Technical Support",
+    "support": "Technical Support",
+
+    // Engineering & Professional
+    "civil-engineering": "Civil Engineering",
+    "electrical-engineering": "Electrical Engineering",
+    "mechanical-engineering": "Mechanical Engineering",
+    "architecture": "Architecture",
+    "education": "Education & Tutoring",
+    "tutoring": "Education & Tutoring"
+};
+
 function normalizeCategory(value) {
     if (!value) return null;
-    return String(value).trim().toLowerCase() || null;
+    const lower = String(value).trim().toLowerCase();
+    if (!lower) return null;
+    // Return the mapped subcategory or the original value
+    return CATEGORY_MAP[lower] || lower;
 }
 
 /**

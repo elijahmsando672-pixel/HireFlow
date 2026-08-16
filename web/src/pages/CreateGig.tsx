@@ -1,12 +1,11 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Sparkles, Trash2 } from "lucide-react";
 import { api } from "../lib/api";
 import { PageHeader } from "../components/PageHeader";
 import { Button } from "../components/Button";
 import { Field, Select, TextArea, TextInput } from "../components/Field";
-
-const CATEGORIES = ["Software", "Design", "Data", "Marketing", "Product", "IT", "Writing", "Video", "Other"];
+import { CATEGORIES, getSubcategoriesByCategoryId } from "../lib/categories";
 
 interface PackageForm {
   name: string;
@@ -23,10 +22,15 @@ export default function CreateGig() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("Software");
+  const [categoryId, setCategoryId] = useState(CATEGORIES[0].id);
+  const [subcategory, setSubcategory] = useState("");
   const [packages, setPackages] = useState<PackageForm[]>([emptyPackage()]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const availableSubcategories = useMemo(() => {
+    return getSubcategoriesByCategoryId(categoryId);
+  }, [categoryId]);
 
   const updatePackage = (index: number, key: keyof PackageForm, value: string) => {
     setPackages((prev) => prev.map((p, i) => (i === index ? { ...p, [key]: value } : p)));
@@ -53,7 +57,7 @@ export default function CreateGig() {
 
     setBusy(true);
     try {
-      await api.createGig({ title, description, category, packages: cleaned });
+      await api.createGig({ title, description, category: subcategory || categoryId, packages: cleaned });
       navigate("/my-gigs");
     } catch (err) {
       setError((err as Error).message);
@@ -75,12 +79,26 @@ export default function CreateGig() {
             </Field>
           </div>
           <Field label="Category">
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              {CATEGORIES.map((c) => (
-                <option key={c}>{c}</option>
+            <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+              {CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
               ))}
             </Select>
           </Field>
+          {availableSubcategories.length > 0 && (
+            <Field label="Subcategory">
+              <Select value={subcategory} onChange={(e) => setSubcategory(e.target.value)}>
+                <option value="">Select subcategory</option>
+                {availableSubcategories.map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          )}
         </div>
 
         <Field label="Description" hint="What exactly will the buyer get? Be specific.">
