@@ -2,10 +2,13 @@ const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
 
-const dataDir = path.join(__dirname, "..", "data");
+// DATABASE_PATH overrides the SQLite location so hosting platforms can
+// point it at a persistent disk (e.g. Render). Falls back to ./data/hireflow.db.
+const dbPath = process.env.DATABASE_PATH || path.join(__dirname, "..", "data", "hireflow.db");
+const dataDir = path.dirname(dbPath);
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-const db = new Database(path.join(dataDir, "hireflow.db"));
+const db = new Database(dbPath);
 
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");

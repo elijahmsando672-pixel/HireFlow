@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: hireflow-api
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/jobs
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        value: admin@hireflow.app
+      - key: CORS_ORIGIN
+        value: https://hire-flow-rho-seven.vercel.app
+      - key: DATABASE_PATH
+        value: /var/data/hireflow.db
+      - key: AGGREGATION_ENABLED
+        value: "true"
+      - key: RUN_SYNC_ON_START
+        value: "false"
+      - key: JOB_SYNC_INTERVAL_MINUTES
+        value: "30"
+      - key: MOCK_SOURCE_ENABLED
+        value: "false"
+      - key: ADZUNA_ENABLED
+        value: "true"
+      - key: ADZUNA_APP_ID
+        sync: false
+      - key: ADZUNA_APP_KEY
+        sync: false
+      - key: ADZUNA_COUNTRY
+        value: gb
+      - key: ADZUNA_RESULTS_PER_PAGE
+        value: "20"
+      - key: ADZUNA_MAX_PAGES
+        value: "2"
+      - key: ADZUNA_SEARCH_TERMS
+        value: "software developer,web developer,javascript developer,python developer"
+    disk:
+      name: hireflow-data
+      mountPath: /var/data
+      sizeGB: 1
