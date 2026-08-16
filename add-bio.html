@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Bio | Auth System</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="registration-container">
+
+        <div class="registration-card">
+
+            <!-- =========================
+                 HEADER
+            ========================== -->
+
+            <div class="registration-header">
+
+                <h1>Add Your Bio</h1>
+
+                <p>
+                    Build your profile so others
+                    can get to know you.
+                </p>
+
+            </div>
+
+
+            <!-- =========================
+                 PROGRESS
+            ========================== -->
+
+            <div class="registration-progress">
+
+                <div class="progress-step completed">
+                    <span>1</span>
+                    <p>Registration</p>
+                </div>
+
+                <div class="progress-line"></div>
+
+                <div class="progress-step active">
+                    <span>2</span>
+                    <p>Bio</p>
+                </div>
+
+                <div class="progress-line"></div>
+
+                <div class="progress-step">
+                    <span>3</span>
+                    <p>Interview</p>
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 BIO FORM
+            ========================== -->
+
+            <form id="bioForm">
+
+
+                <!-- =========================
+                     PROFILE PICTURE
+                ========================== -->
+
+                <div class="form-section">
+
+                    <div class="section-title">
+
+                        <h2>Profile Picture</h2>
+
+                        <p>
+                            Upload a professional
+                            profile photo.
+                        </p>
+
+                    </div>
+
+
+                    <div class="profile-picture-upload">
+
+                        <div
+                            class="profile-preview"
+                            id="profilePreview"
+                        >
+
+                            <img
+                                src=""
+                                alt="Profile preview"
+                                id="profileImage"
+                                style="display: none;"
+                            >
+
+                            <div
+                                class="profile-placeholder"
+                                id="profilePlaceholder"
+                            >
+
+                                <span>+</span>
+
+                                <p>Upload Photo</p>
+
+                            </div>
+
+                        </div>
+
+                        <input
+                            type="file"
+                            id="profilePicture"
+                            accept="image/*"
+                            class="file-input"
+                        >
+
+                        <p class="file-hint">
+                            JPG, PNG or GIF. Max 5MB.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================
+                     PROFILE BASICS
+                ========================== -->
+
+                <div class="form-section">
+
+                    <div class="section-title">
+
+                        <h2>Profile Basics</h2>
+
+                        <p>
+                            What do you want people
+                            to see first?
+                        </p>
+
+                    </div>
+
+
+                    <!-- Headline -->
+
+                    <div class="form-group">
+
+                        <label for="headline">
+                            Professional Headline
+                        </label>
+
+                        <input
+                            type="text"
+                            id="headline"
+                            placeholder="e.g. Software Engineer | Open Source Enthusiast"
+                            maxlength="120"
+                            required
+                        >
+
+                        <span class="char-count">
+                            <span id="headlineCount">0</span>/120
+                        </span>
+
+                    </div>
+
+
+                    <!-- Bio -->
+
+                    <div class="form-group">
+
+                        <label for="bio">
+                            Professional Bio
+                        </label>
+
+                        <textarea
+                            id="bio"
+                            rows="5"
+                            placeholder="Tell us about yourself, your background, and what you're passionate about..."
+                            maxlength="500"
+                            required
+                        ></textarea>
+
+                        <span class="char-count">
+                            <span id="bioCount">0</span>/500
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================
+                     SKILLS
+                ========================== -->
+
+                <div class="form-section">
+
+                    <div class="section-title">
+
+                        <h2>Skills & Expertise</h2>
+
+                        <p>
+                            Add your key skills so
+                            others can find you.
+                        </p>
+
+                    </div>
+
+
+                    <!-- Skills Input -->
+
+                    <div class="skills-input-wrapper">
+
+                        <div class="form-group" style="margin-bottom: 0;">
+
+                            <label for="skillInput">
+                                Add a Skill
+                            </label>
+
+                            <div class="skill-input-row">
+
+                                <input
+                                    type="text"
+                                    id="skillInput"
+                                    placeholder="e.g. JavaScript, Project Management..."
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn btn-small"
+                                    id="addSkillBtn"
+                                >
+                                    Add
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Skills Tags -->
+
+                    <div
+                        class="skills-tags"
+                        id="skillsTags"
+                    ></div>
+
+                    <input
+                        type="hidden"
+                        id="skillsHidden"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- =========================
+                     SOCIAL LINKS
+                ========================== -->
+
+                <div class="form-section">
+
+                    <div class="section-title">
+
+                        <h2>Social Links</h2>
+
+                        <p>
+                            Connect your social
+                            and professional profiles.
+                        </p>
+
+                    </div>
+
+
+                    <!-- LinkedIn -->
+
+                    <div class="form-group">
+
+                        <label for="linkedin">
+                            LinkedIn
+                        </label>
+
+                        <input
+                            type="url"
+                            id="linkedin"
+                            placeholder="https://linkedin.com/in/username"
+                        >
+
+                    </div>
+
+
+                    <!-- GitHub -->
+
+                    <div class="form-group">
+
+                        <label for="github">
+                            GitHub
+                        </label>
+
+                        <input
+                            type="url"
+                            id="github"
+                            placeholder="https://github.com/username"
+                        >
+
+                    </div>
+
+
+                    <!-- Twitter/X -->
+
+                    <div class="form-group">
+
+                        <label for="twitter">
+                            Twitter / X
+                        </label>
+
+                        <input
+                            type="url"
+                            id="twitter"
+                            placeholder="https://twitter.com/username"
+                        >
+
+                    </div>
+
+
+                    <!-- Portfolio / Website -->
+
+                    <div class="form-group">
+
+                        <label for="portfolio">
+                            Portfolio / Website
+                        </label>
+
+                        <input
+                            type="url"
+                            id="portfolio"
+                            placeholder="https://yourwebsite.com"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================
+                     INTERESTS
+                ========================== -->
+
+                <div class="form-section">
+
+                    <div class="section-title">
+
+                        <h2>Interests</h2>
+
+                        <p>
+                            What topics or activities
+                            interest you?
+                        </p>
+
+                    </div>
+
+
+                    <!-- Interests Input -->
+
+                    <div class="skills-input-wrapper">
+
+                        <div class="form-group" style="margin-bottom: 0;">
+
+                            <label for="interestInput">
+                                Add an Interest
+                            </label>
+
+                            <div class="skill-input-row">
+
+                                <input
+                                    type="text"
+                                    id="interestInput"
+                                    placeholder="e.g. AI, Hiking, Photography..."
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn btn-small"
+                                    id="addInterestBtn"
+                                >
+                                    Add
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Interests Tags -->
+
+                    <div
+                        class="skills-tags"
+                        id="interestsTags"
+                    ></div>
+
+                    <input
+                        type="hidden"
+                        id="interestsHidden"
+                    >
+
+                </div>
+
+
+
+                <!-- =========================
+                     BUTTONS
+                ========================== -->
+
+                <div class="registration-actions">
+
+                    <a
+                        href="registration.html"
+                        class="secondary-btn"
+                    >
+                        Back
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn"
+                    >
+                        Continue to Interview
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,33 @@
+{
+  "name": "hireflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HireFlow - Job Recruitment & Talent Management Platform",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "sync:jobs": "node server/aggregation/cli.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^4.6.0",
+    "zod": "^4.4.3"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true
+  },
+  "devDependencies": {
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.10"
+  }
+}

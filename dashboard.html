@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | HireFlow</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hireflow.css">
+</head>
+
+<body>
+
+    <header class="hireflow-nav">
+        <div class="container nav-inner">
+            <a href="dashboard.html" class="nav-logo">Hire<span>Flow</span></a>
+
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="gigs.html" class="nav-link">Gigs</a>
+                <a href="aggregated-jobs.html" class="nav-link">External Jobs</a>
+                <a href="contracts.html" class="nav-link">Contracts</a>
+                <a href="messages.html" class="nav-link">Inbox</a>
+            </nav>
+
+            <div class="nav-user">
+                <button id="navAvatar" class="nav-avatar">C</button>
+                <span id="navName" class="nav-name">Candidate</span>
+                <button id="logoutBtn" class="nav-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="welcome-banner">
+            <div>
+                <h1>Welcome back, <span id="welcomeName">Candidate</span>!</h1>
+                <p>Track your proposals, sell your skills and discover new work.</p>
+            </div>
+
+            <div class="welcome-actions">
+                <a href="jobs.html" class="btn btn-light">Browse Jobs</a>
+                <a href="gigs.html" class="btn btn-outline-light">Shop Gigs</a>
+            </div>
+        </section>
+
+        <section class="stat-grid">
+            <div class="stat-card">
+                <p class="stat-number" id="statApplications">0</p>
+                <p class="stat-label">Proposals</p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-number" id="statOpenings">0</p>
+                <p class="stat-label">Openings</p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-number" id="statStrength">0%</p>
+                <p class="stat-label">Profile Strength</p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-number" id="statInterviews">0</p>
+                <p class="stat-label">Interviews</p>
+            </div>
+        </section>
+
+        <div class="card">
+            <h2 class="card-title">Marketplace</h2>
+            <div class="quick-links">
+                <a href="post-job.html" class="quick-link"><span class="quick-emoji">&#128188;</span> Post a Job</a>
+                <a href="my-jobs.html" class="quick-link"><span class="quick-emoji">&#128203;</span> My Jobs</a>
+                <a href="my-proposals.html" class="quick-link"><span class="quick-emoji">&#9993;</span> My Proposals</a>
+                <a href="create-gig.html" class="quick-link"><span class="quick-emoji">&#127912;</span> Create a Gig</a>
+                <a href="my-gigs.html" class="quick-link"><span class="quick-emoji">&#128240;</span> My Gigs</a>
+                <a href="my-orders.html" class="quick-link"><span class="quick-emoji">&#128722;</span> My Orders</a>
+                <a href="contracts.html" class="quick-link"><span class="quick-emoji">&#9996;</span> Contracts</a>
+                <a href="messages.html" class="quick-link"><span class="quick-emoji">&#128172;</span> Messages</a>
+                <a href="saved.html" class="quick-link"><span class="quick-emoji">&#11088;</span> Saved</a>
+            </div>
+        </div>
+
+        <section class="dashboard-grid">
+
+            <div>
+                <div class="card profile-card">
+                    <div class="profile-avatar" id="profileAvatar">C</div>
+                    <h2 class="profile-name" id="profileName">Candidate</h2>
+
+                    <div id="profileDetails" style="display: none;">
+                        <p class="profile-headline" id="profileHeadline"></p>
+                        <p class="profile-bio" id="profileBio"></p>
+
+                        <div class="profile-details">
+                            <div class="profile-detail">
+                                <span>Email</span>
+                                <span id="profileEmail">—</span>
+                            </div>
+
+                            <div class="profile-detail">
+                                <span>Phone</span>
+                                <span id="profilePhone">—</span>
+                            </div>
+
+                            <div class="profile-detail">
+                                <span>Education</span>
+                                <span id="profileEducation">—</span>
+                            </div>
+                        </div>
+
+                        <div class="profile-links" id="profileLinks"></div>
+
+                        <h3 class="card-subtitle">Skills</h3>
+                        <div class="skill-chips" id="profileSkills"></div>
+                    </div>
+
+                    <div id="profileCta">
+                        <p class="profile-bio">Complete your profile to stand out to clients.</p>
+                        <a href="add-bio.html" class="btn btn-outline">Complete Profile</a>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="card" id="contractsCard" style="display: none;">
+                    <h2 class="card-title">Active Contracts</h2>
+                    <div id="contractsEmpty" style="display: none;">
+                        <p class="empty-note">No contracts yet. Hire a freelancer or place a gig order to get started.</p>
+                    </div>
+                    <div id="contractsList"></div>
+                </div>
+
+                <div class="card" id="proposals">
+                    <h2 class="card-title">Recent Proposals <span class="muted" id="proposalsCount"></span></h2>
+
+                    <div id="proposalsEmpty">
+                        <p class="empty-note">You haven't submitted any proposals yet.</p>
+                        <a href="jobs.html" class="btn btn-outline">Browse Jobs</a>
+                    </div>
+
+                    <div id="proposalsList"></div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Recommended For You</h2>
+                    <div class="job-grid" id="recommendedJobs"></div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
+

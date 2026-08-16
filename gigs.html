@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gig Marketplace | HireFlow</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hireflow.css">
+</head>
+
+<body>
+
+    <header class="hireflow-nav">
+        <div class="container nav-inner">
+            <a href="dashboard.html" class="nav-logo">Hire<span>Flow</span></a>
+
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="gigs.html" class="nav-link">Gigs</a>
+                <a href="aggregated-jobs.html" class="nav-link">External Jobs</a>
+                <a href="messages.html" class="nav-link">Inbox</a>
+            </nav>
+
+            <div class="nav-user">
+                <button id="navAvatar" class="nav-avatar">C</button>
+                <span id="navName" class="nav-name">Candidate</span>
+                <button id="logoutBtn" class="nav-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="page-toolbar">
+            <div>
+                <h1>Gig Marketplace</h1>
+                <p>Buy services or offer your own skills as a gig.</p>
+            </div>
+            <a href="create-gig.html" class="btn btn-primary">+ Create a Gig</a>
+        </div>
+
+        <div class="filter-bar">
+            <input type="text" id="gigSearch" placeholder="Search gigs...">
+
+            <select id="gigCategory">
+                <option value="">All Categories</option>
+            </select>
+
+            <select id="gigSort">
+                <option value="newest">Newest</option>
+                <option value="priceLow">Price: Low to High</option>
+                <option value="priceHigh">Price: High to Low</option>
+            </select>
+        </div>
+
+        <p class="results-info"><span id="gigResultsCount">0</span> gigs found</p>
+
+        <div class="gig-grid" id="gigGrid"></div>
+
+        <div class="empty-state" id="gigEmptyState" style="display: none;">
+            <h3>No gigs match your search</h3>
+            <p>Try adjusting your search or filters.</p>
+        </div>
+
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/gigs.js"></script>
+</body>
+</html>

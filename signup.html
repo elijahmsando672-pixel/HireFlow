@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | Auth System</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="auth-container">
+
+        <div class="auth-card signup-card">
+
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Sign up to get started</p>
+            </div>
+
+            <form id="signupForm">
+
+                <!--Role-->
+                <div class="form-group">
+                    <label>How will you use HireFlow?</label>
+
+                    <div class="role-options">
+                        <label class="role-option">
+                            <input type="radio" name="role" value="client">
+                            <span class="role-option-body">
+                                <strong>Client</strong>
+                                <small>I want to hire freelancers and post jobs</small>
+                            </span>
+                        </label>
+
+                        <label class="role-option">
+                            <input type="radio" name="role" value="freelancer">
+                            <span class="role-option-body">
+                                <strong>Freelancer</strong>
+                                <small>I want to apply to jobs and sell gigs</small>
+                            </span>
+                        </label>
+
+                        <label class="role-option">
+                            <input type="radio" name="role" value="both" checked>
+                            <span class="role-option-body">
+                                <strong>Both</strong>
+                                <small>I hire and freelance on HireFlow</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!--Name-->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            placeholder="Enter first name"
+                            required
+                            >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            placeholder="Enter last name"
+                            required
+                            >
+                    </div>
+                </div>
+
+                <!--Username-->
+                <div class="form-group">
+                    <label for="username">Username</label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Choose a username"
+                        required
+                        >
+                </div>
+
+                <!--Email-->
+                <div class="form-group">
+                    <label for="signupEmail">Email Address</label>
+
+                    <input
+                        type="email"
+                        id="signupEmail"
+                        name="signupEmail"
+                        placeholder="Enter your email"
+                        required
+                        >
+                </div>
+
+                <!--Phone-->
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="+254 7XX XXX XXX"
+                        required
+                        >
+                </div>
+
+                <!--Password-->
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="signupPassword"
+                            name="signupPassword"
+                            placeholder="Enter your password"
+                            required
+                            >
+
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            onclick="togglePassword('signupPassword', this)"
+                        >
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <!--Password Strength-->
+                <div class="password-strength">
+                    <div class="strength-bar">
+                        <span id="strengthBar"></span>
+                    </div>
+                    <p id="passwordStrengthText">Password strength</p>
+                </div>
+
+                <!--Confirm Password-->
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Confirm your password"
+                        required
+                        >
+                </div>
+
+                <!--Terms-->
+                <div class="terms">
+                    <label>
+                        <input type="checkbox" id="terms">
+                        <span>I agree to the <a href="#">Terms &amp; Conditions</a></span>
+                    </label>
+                </div>
+
+                <!--Submit Button-->
+                <button type="submit" class="btn">Sign Up</button>
+            </form>
+
+            <p class="auth-footer">
+                Already have an account?
+                <a href="index.html">Login here</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+

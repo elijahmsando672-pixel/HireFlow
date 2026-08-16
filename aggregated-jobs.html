@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Jobs | HireFlow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hireflow.css">
+</head>
+
+<body>
+    <header class="hireflow-nav">
+        <div class="container nav-inner">
+            <a href="dashboard.html" class="nav-logo">Hire<span>Flow</span></a>
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="gigs.html" class="nav-link">Gigs</a>
+                <a href="aggregated-jobs.html" class="nav-link active">External Jobs</a>
+                <a href="messages.html" class="nav-link">Inbox</a>
+            </nav>
+            <div class="nav-user">
+                <button id="navAvatar" class="nav-avatar">C</button>
+                <span id="navName" class="nav-name">Candidate</span>
+                <button id="logoutBtn" class="nav-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-toolbar">
+            <div>
+                <h1>External Jobs</h1>
+                <p>Curated opportunities from trusted external sources.</p>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <input type="text" id="searchInput" placeholder="Search external jobs...">
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+            </select>
+            <select id="typeFilter">
+                <option value="">All Types</option>
+            </select>
+            <select id="remoteFilter">
+                <option value="">Any Location</option>
+                <option value="true">Remote</option>
+                <option value="false">On-site</option>
+            </select>
+            <select id="sortFilter">
+                <option value="newest">Newest</option>
+                <option value="budget_desc">Highest Budget</option>
+                <option value="budget_asc">Lowest Budget</option>
+            </select>
+        </div>
+
+        <p class="results-info"><span id="resultsCount">0</span> external jobs found</p>
+        <div class="job-grid" id="jobGrid"></div>
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h3>No external jobs match your search</h3>
+            <p>Try adjusting your search or filters.</p>
+        </div>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/aggregated-jobs.js"></script>
+</body>
+</html>

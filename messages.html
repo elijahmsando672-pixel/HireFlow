@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Messages | HireFlow</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hireflow.css">
+</head>
+
+<body>
+
+    <header class="hireflow-nav">
+        <div class="container nav-inner">
+            <a href="dashboard.html" class="nav-logo">Hire<span>Flow</span></a>
+
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="gigs.html" class="nav-link">Gigs</a>`n                <a href="aggregated-jobs.html" class="nav-link">External Jobs</a>`n                <a href="messages.html" class="nav-link">Inbox</a>
+            </nav>
+
+            <div class="nav-user">
+                <button id="navAvatar" class="nav-avatar">C</button>
+                <span id="navName" class="nav-name">Candidate</span>
+                <button id="logoutBtn" class="nav-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="page-toolbar">
+            <div>
+                <h1>Messages</h1>
+                <p>Chat with clients and freelancers.</p>
+            </div>
+        </div>
+
+        <div class="chat-layout">
+            <div class="chat-list" id="conversationList"></div>
+
+            <div class="chat-thread" id="chatThread">
+                <div class="chat-thread-head" id="threadHead">Select a conversation</div>
+                <div class="chat-messages" id="threadMessages">
+                    <p class="chat-empty">No conversation selected.</p>
+                </div>
+                <div class="chat-compose" id="composeRow" style="display: none;">
+                    <input type="text" id="messageInput" placeholder="Type a message...">
+                    <button id="sendBtn" class="btn btn-primary btn-sm">Send</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/messages.js"></script>
+</body>
+</html>
+

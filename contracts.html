@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Contracts | HireFlow</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hireflow.css">
+</head>
+
+<body>
+
+    <header class="hireflow-nav">
+        <div class="container nav-inner">
+            <a href="dashboard.html" class="nav-logo">Hire<span>Flow</span></a>
+
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="gigs.html" class="nav-link">Gigs</a>`n                <a href="aggregated-jobs.html" class="nav-link">External Jobs</a>`n                <a href="contracts.html" class="nav-link">Contracts</a>
+                <a href="messages.html" class="nav-link">Inbox</a>
+            </nav>
+
+            <div class="nav-user">
+                <button id="navAvatar" class="nav-avatar">C</button>
+                <span id="navName" class="nav-name">Candidate</span>
+                <button id="logoutBtn" class="nav-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="page-toolbar">
+            <div>
+                <h1>Contracts</h1>
+                <p>Every hire — pay, deliver and get paid through escrow.</p>
+            </div>
+            <a href="jobs.html" class="btn btn-outline">Browse Jobs</a>
+        </div>
+
+        <div class="tab-bar">
+            <button id="allTab" class="tab-btn active">All</button>
+            <button id="clientTab" class="tab-btn">Hiring</button>
+            <button id="freelancerTab" class="tab-btn">Working</button>
+        </div>
+
+        <div class="contract-grid" id="contractsList"></div>
+
+        <div id="contractsEmpty" class="empty-state">
+            <h3>No contracts yet</h3>
+            <p>Hire a freelancer from a proposal, or place a gig order, and your contract will appear here.</p>
+            <a href="jobs.html" class="btn btn-outline" style="margin-top: 12px;">Browse Jobs</a>
+        </div>
+
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/contracts.js"></script>
+</body>
+</html>
+
+

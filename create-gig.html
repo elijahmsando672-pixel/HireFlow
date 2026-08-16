@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create a Gig | HireFlow</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hireflow.css">
+</head>
+
+<body>
+
+    <header class="hireflow-nav">
+        <div class="container nav-inner">
+            <a href="dashboard.html" class="nav-logo">Hire<span>Flow</span></a>
+
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="gigs.html" class="nav-link">Gigs</a>`n                <a href="aggregated-jobs.html" class="nav-link">External Jobs</a>`n                <a href="messages.html" class="nav-link">Inbox</a>
+            </nav>
+
+            <div class="nav-user">
+                <button id="navAvatar" class="nav-avatar">C</button>
+                <span id="navName" class="nav-name">Candidate</span>
+                <button id="logoutBtn" class="nav-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <a href="gigs.html" class="back-link">&larr; Back to Gigs</a>
+
+        <div class="market-form">
+            <h1 style="font-size: 24px; margin-bottom: 4px;">Create a Gig</h1>
+            <p class="empty-note" style="margin-bottom: 20px;">Offer a service with up to three pricing packages.</p>
+
+            <div class="form-group">
+                <label for="gigTitle">Gig title</label>
+                <input type="text" id="gigTitle" placeholder="e.g. I will design a professional logo">
+            </div>
+
+            <div class="form-group">
+                <label for="gigCategory">Category</label>
+                <select id="gigCategory">
+                    <option>Design</option>
+                    <option>Software</option>
+                    <option>Writing</option>
+                    <option>Video</option>
+                    <option>Marketing</option>
+                    <option>Data</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="gigDescription">Description</label>
+                <textarea id="gigDescription" rows="5" placeholder="What will the buyer get? Be specific about deliverables..."></textarea>
+            </div>
+
+            <h2 class="card-subtitle" style="margin-top: 24px;">Packages</h2>
+            <p class="form-hint" style="margin-bottom: 14px;">Buyers pick a package when they order. You can keep all three or just the first.</p>
+
+            <div id="packageRows"></div>
+
+            <button id="createGigBtn" class="btn btn-primary btn-block">Create Gig</button>
+            <p id="createGigStatus" class="apply-status"></p>
+        </div>
+
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/create-gig.js"></script>
+</body>
+</html>
+

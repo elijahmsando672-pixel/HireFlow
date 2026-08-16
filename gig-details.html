@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gig Details | HireFlow</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hireflow.css">
+</head>
+
+<body>
+
+    <header class="hireflow-nav">
+        <div class="container nav-inner">
+            <a href="dashboard.html" class="nav-logo">Hire<span>Flow</span></a>
+
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="gigs.html" class="nav-link">Gigs</a>`n                <a href="aggregated-jobs.html" class="nav-link">External Jobs</a>`n                <a href="messages.html" class="nav-link">Inbox</a>
+            </nav>
+
+            <div class="nav-user">
+                <button id="navAvatar" class="nav-avatar">C</button>
+                <span id="navName" class="nav-name">Candidate</span>
+                <button id="logoutBtn" class="nav-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="page-toolbar">
+            <a href="gigs.html" class="back-link" style="margin: 0;">&larr; Back to Gigs</a>
+            <button id="saveGigBtn" class="save-btn">&#9734; Save gig</button>
+        </div>
+
+        <div id="gigDetail"></div>
+
+        <div class="card">
+            <h2 class="card-title">Reviews</h2>
+            <div id="reviewsList"></div>
+            <p class="empty-note" id="reviewsEmpty">No reviews yet.</p>
+        </div>
+
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/gig-details.js"></script>
+</body>
+</html>
+

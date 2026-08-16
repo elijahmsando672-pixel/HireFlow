@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Post a Job | HireFlow</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hireflow.css">
+</head>
+
+<body>
+
+    <header class="hireflow-nav">
+        <div class="container nav-inner">
+            <a href="dashboard.html" class="nav-logo">Hire<span>Flow</span></a>
+
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="gigs.html" class="nav-link">Gigs</a>`n                <a href="aggregated-jobs.html" class="nav-link">External Jobs</a>`n                <a href="messages.html" class="nav-link">Inbox</a>
+            </nav>
+
+            <div class="nav-user">
+                <button id="navAvatar" class="nav-avatar">C</button>
+                <span id="navName" class="nav-name">Candidate</span>
+                <button id="logoutBtn" class="nav-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <a href="jobs.html" class="back-link">&larr; Back to Jobs</a>
+
+        <div class="market-form">
+            <h1 style="font-size: 24px; margin-bottom: 4px;">Post a Job</h1>
+            <p class="empty-note" style="margin-bottom: 20px;">Describe what you need done and freelancers will send you proposals.</p>
+
+            <div class="form-group">
+                <label for="jobTitle">Job title</label>
+                <input type="text" id="jobTitle" placeholder="e.g. Build a landing page for my startup">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="jobCompany">Company</label>
+                    <input type="text" id="jobCompany" placeholder="e.g. Acme Inc">
+                </div>
+
+                <div class="form-group">
+                    <label for="jobLocation">Location</label>
+                    <input type="text" id="jobLocation" placeholder="e.g. Nairobi or Remote">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="jobType">Type</label>
+                    <select id="jobType">
+                        <option>Contract</option>
+                        <option>Full-time</option>
+                        <option>Part-time</option>
+                        <option>Freelance</option>
+                        <option>Internship</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="jobCategory">Category</label>
+                    <select id="jobCategory">
+                        <option>Software</option>
+                        <option>Design</option>
+                        <option>Data</option>
+                        <option>Marketing</option>
+                        <option>Product</option>
+                        <option>IT</option>
+                        <option>Writing</option>
+                        <option>Video</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="jobSalary">Budget (KSh)</label>
+                    <input type="number" id="jobSalary" min="0" placeholder="e.g. 50000">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="jobDescription">Description</label>
+                <textarea id="jobDescription" rows="5" placeholder="What do you need done? Be specific about the scope and deliverables..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="jobRequirements">Requirements</label>
+                <textarea id="jobRequirements" rows="4" placeholder="One requirement per line:&#10;Strong HTML and CSS&#10;Experience with React"></textarea>
+                <p class="form-hint">One requirement per line.</p>
+            </div>
+
+            <button id="postJobBtn" class="btn btn-primary btn-block">Post Job</button>
+            <p id="postJobStatus" class="apply-status"></p>
+        </div>
+
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/post-job.js"></script>
+</body>
+</html>
+

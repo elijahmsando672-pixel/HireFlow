@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Orders | HireFlow</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hireflow.css">
+</head>
+
+<body>
+
+    <header class="hireflow-nav">
+        <div class="container nav-inner">
+            <a href="dashboard.html" class="nav-logo">Hire<span>Flow</span></a>
+
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="gigs.html" class="nav-link">Gigs</a>`n                <a href="aggregated-jobs.html" class="nav-link">External Jobs</a>`n                <a href="messages.html" class="nav-link">Inbox</a>
+            </nav>
+
+            <div class="nav-user">
+                <button id="navAvatar" class="nav-avatar">C</button>
+                <span id="navName" class="nav-name">Candidate</span>
+                <button id="logoutBtn" class="nav-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="page-toolbar">
+            <div>
+                <h1>My Orders</h1>
+                <p>Gigs you have bought or sold.</p>
+            </div>
+            <a href="gigs.html" class="btn btn-outline">Browse Gigs</a>
+        </div>
+
+        <div class="tab-bar">
+            <button id="buyerTab" class="tab-btn active">As Buyer</button>
+            <button id="sellerTab" class="tab-btn">As Seller</button>
+        </div>
+
+        <div class="card" id="ordersList"></div>
+
+        <div id="ordersEmpty" class="empty-state">
+            <h3>No orders here yet</h3>
+            <p>Order a gig or wait for buyers to order yours.</p>
+            <a href="gigs.html" class="btn btn-outline" style="margin-top: 12px;">Browse Gigs</a>
+        </div>
+
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/my-orders.js"></script>
+</body>
+</html>
+
