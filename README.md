@@ -1,112 +1,101 @@
 # HireFlow
 
-HireFlow is a job recruitment and talent management platform built with vanilla HTML, CSS, JavaScript and Node.js/Express.
+HireFlow is a full-stack recruitment and freelancing platform. It provides job posts and proposals, service gigs, contracts, mock escrow payments, reviews, direct messages, saved items, user profiles, and external job aggregation.
 
-## Features
+## Stack
 
-- User authentication (register, login, forgot password)
-- Job posting and applications
-- Gig marketplace
-- Proposals and contracts
-- Messaging
-- Reviews
-- Saved jobs/gigs
-- **Job aggregation from external authorized sources**
+- React 19, TypeScript, Vite, React Router, Tailwind CSS
+- Express and SQLite (`better-sqlite3`)
+- bcrypt authentication with JWT Bearer tokens
+- Zod validation, Helmet, rate limiting, and CORS allow-listing
+- node-cron job aggregation with pluggable source adapters
 
-## Getting Started
+## Project structure
+
+```
+web/                    React application
+server/app.js           Express middleware, API routes, and static hosting
+server/index.js         Process startup and aggregation scheduler
+server/routes/          Marketplace, aggregation, and admin endpoints
+server/aggregation/     Sources, normalization, deduplication, and sync jobs
+data/                   Local SQLite database files (ignored by Git)
+tests/                  Vitest unit and API tests
+```
+
+The root HTML/CSS/JavaScript files are retained from the legacy static implementation. The active marketplace client is in `web/`.
+
+## Run locally
+
+Prerequisite: Node.js 18+.
+
+Start the API:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000
-
-## Environment Variables
-
-Copy `.env.example` to `.env` and configure:
+Start the React client in another terminal:
 
 ```bash
+cd web
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`. Vite proxies `/api` requests to Express at `http://localhost:3000`.
+
+To serve a production client build from Express:
+
+```bash
+cd web
+npm run build
+cd ..
+npm start
+```
+
+## Configuration
+
+Copy `.env.example` to `.env` and set the values required for your environment.
+
+```dotenv
 PORT=3000
-JWT_SECRET=your-secret-here
+NODE_ENV=development
+JWT_SECRET=replace-with-a-long-random-secret
+ADMIN_EMAIL=admin@example.com
 AGGREGATION_ENABLED=true
+RUN_SYNC_ON_START=false
 JOB_SYNC_INTERVAL_MINUTES=30
 MOCK_SOURCE_ENABLED=true
 ```
 
-## Job Aggregation System
+`JWT_SECRET` is mandatory in production. `CORS_ORIGIN` is optional and accepts a comma-separated allow-list of frontend origins.
 
-HireFlow includes a modular job aggregation subsystem that collects job listings from authorized external sources.
+## Job aggregation
 
-### Architecture
+The aggregation pipeline imports listings only from authorized sources, normalizes them, deduplicates them, and records source/sync status in SQLite.
 
-```
-server/aggregation/
-├── aggregator.js        # Pipeline orchestrator
-├── normalizer.js        # Canonical job shape
-├── deduplicator.js      # 3-level dedup
-├── scheduler.js         # Cron-based sync
-├── sourceAdapter.js     # Adapter contract
-├── sourceConfig.js      # Source registry
-├── constants.js         # Canonical enums
-├── logger.js            # Safe logging
-├── cli.js               # Manual sync trigger
-└── sources/
-    ├── mockApiSource.js       # Dev/test source (enabled)
-    └── exampleRssSource.js    # RSS template (disabled)
-```
+- Public API: `/api/aggregated-jobs`
+- Admin API: `/api/admin`
+- Manual sync: `npm run sync:jobs`
 
-### Database Tables
+The admin API requires an authenticated administrator (`role = 'admin'` in the database or a matching `ADMIN_EMAIL`).
 
-- `aggregated_jobs` — collected job listings
-- `aggregation_sources` — source registry and stats
-- `aggregation_sync_logs` — sync history
-
-### API Endpoints
-
-**Public:**
-- `GET /api/aggregated-jobs` — list with pagination, search, filters
-- `GET /api/aggregated-jobs/:id` — single job
-- `GET /api/aggregated-jobs/search` — search alias
-- `GET /api/aggregated-jobs/featured` — top by budget
-- `GET /api/aggregated-jobs/recent` — newest listings
-- `GET /api/aggregated-jobs/categories` — category counts
-- `GET /api/aggregated-jobs/skills` — skill counts
-- `GET /api/aggregated-jobs/sources` — source status
-
-**Admin (requires auth + admin role):**
-- `GET /api/admin/aggregation/stats`
-- `GET /api/admin/aggregation/sources`
-- `PUT /api/admin/aggregation/sources/:name`
-- `POST /api/admin/aggregation/sync`
-- `GET /api/admin/aggregation/sync/status`
-- `GET /api/admin/aggregation/sync/logs`
-
-### Frontend
-
-- `aggregated-jobs.html` — browse external jobs
-- `aggregated-job-details.html` — view external job details with source attribution
-
-### Adding a New Source
-
-1. Create `server/aggregation/sources/yourSource.js`
-2. Export a `createSourceAdapter({...})` with `name`, `label`, `type`, `enabled`, `fetchJobs`
-3. Register in `server/aggregation/sourceConfig.js`
-4. Configure any env vars
-5. Enable via admin API or set `enabled: true`
-
-### Manual Sync
-
-```bash
-npm run sync:jobs
-```
-
-### Running Tests
+## Quality checks
 
 ```bash
 npm test
+
+cd web
+npm run typecheck
 ```
 
-## Legal Note
+## Security and workflow rules
 
-Only collect jobs from sources where automated collection is explicitly permitted (official APIs, public RSS feeds with permissive terms, or sites whose robots.txt and terms of service allow it).
+- Server-side authorization protects private records and state transitions.
+- Contracts control payment, delivery, completion, and cancellation; orders are not directly state-editable.
+- Monetary values and proposal timelines must be positive.
+- Multi-record lifecycle actions run inside SQLite transactions.
+- API requests are size-limited and rate-limited; authentication allows 10 attempts per 15 minutes.
+
+For architecture, endpoint details, and contributor guidance, see [DOCUMENTATION.md](DOCUMENTATION.md).

@@ -12,10 +12,12 @@ const { createSourceAdapter } = require("./sourceAdapter");
 
 const mockApiSource = require("./sources/mockApiSource");
 const exampleRssSource = require("./sources/exampleRssSource");
+const adzunaSource = require("./sources/adzunaSource");
 
 const REGISTERED = [
     mockApiSource,
-    exampleRssSource
+    exampleRssSource,
+    adzunaSource
 ];
 
 function getSources() {
