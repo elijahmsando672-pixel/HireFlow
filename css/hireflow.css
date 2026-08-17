@@ -15,11 +15,21 @@
 }
 
 .nav-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-size: 22px;
     font-weight: 800;
     color: #1f2937;
     text-decoration: none;
     white-space: nowrap;
+}
+
+.nav-logo img {
+    height: 32px;
+    width: auto;
+    border-radius: 6px;
+    display: block;
 }
 
 .nav-logo span {

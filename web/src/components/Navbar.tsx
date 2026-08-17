@@ -27,9 +27,7 @@ export function Navbar() {
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-black text-white">
-            HF
-          </span>
+          <img src="/assets/logo.jpeg" alt="HireFlow" className="h-8 w-auto rounded-lg" />
           <span className="text-lg font-black tracking-tight text-slate-900">
             Hire<span className="text-indigo-600">Flow</span>
           </span>
