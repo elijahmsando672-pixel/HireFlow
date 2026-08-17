@@ -27,6 +27,7 @@ import Messages from "./pages/Messages";
 import Saved from "./pages/Saved";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Upgrade from "./pages/Upgrade";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
       <Route element={<PublicLayout />}>
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/jobs/:id" element={<JobDetails />} />
+        <Route path="/upgrade" element={<Upgrade />} />
       </Route>
 
       <Route element={<ProtectedCentered />}>

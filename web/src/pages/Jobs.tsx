@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
-import { api } from "../lib/api";
+import { Link } from "react-router-dom";
+import { Lock, Search } from "lucide-react";
+import { api, ApiError } from "../lib/api";
 import type { Job } from "../lib/types";
+import { useAuth } from "../context/AuthContext";
 import { PageHeader } from "../components/PageHeader";
 import { JobCard } from "../components/JobCard";
 import { EmptyState } from "../components/EmptyState";
+import { Button } from "../components/Button";
 import { Field, Select, TextInput } from "../components/Field";
 import { CATEGORIES, getSubcategoriesByCategoryId } from "../lib/categories";
 
@@ -12,9 +15,11 @@ const TYPES = ["All", "Full-time", "Part-time", "Contract", "Internship", "Freel
 const LOCATIONS = ["All", "Nairobi", "Mombasa", "Nakuru", "Remote"];
 
 export default function Jobs() {
+  const { user } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [blocked, setBlocked] = useState<"login" | "upgrade" | null>(null);
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("All");
   const [subcategory, setSubcategory] = useState("All");
@@ -40,6 +45,8 @@ export default function Jobs() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setError("");
+    setBlocked(null);
     const filters: Record<string, string> = {};
     if (debouncedSearch) filters.search = debouncedSearch;
     if (subcategory !== "All") {
@@ -54,13 +61,26 @@ export default function Jobs() {
     api
       .getJobs(filters)
       .then((data) => !cancelled && setJobs(data.jobs))
-      .catch((err) => !cancelled && setError((err as Error).message))
+      .catch((err) => {
+        if (cancelled) return;
+        if (err instanceof ApiError) {
+          if (!user && err.status === 401) {
+            setBlocked("login");
+            return;
+          }
+          if (err.code === "SUBSCRIPTION_REQUIRED") {
+            setBlocked("upgrade");
+            return;
+          }
+        }
+        setError((err as Error).message);
+      })
       .finally(() => !cancelled && setLoading(false));
 
     return () => {
       cancelled = true;
     };
-  }, [debouncedSearch, categoryId, subcategory, type, location, sort]);
+  }, [debouncedSearch, categoryId, subcategory, type, location, sort, user]);
 
   const filtered = useMemo(() => jobs, [jobs]);
 
@@ -131,7 +151,24 @@ export default function Jobs() {
 
       {error && <div className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</div>}
 
-      {loading ? (
+      {blocked && !loading ? (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+            <Lock className="h-6 w-6" />
+          </div>
+          <h2 className="mb-2 text-lg font-semibold text-slate-900">
+            {blocked === "login" ? "Log in to browse jobs" : "Upgrade to browse all jobs"}
+          </h2>
+          <p className="mb-6 max-w-md text-sm text-slate-500">
+            {blocked === "login"
+              ? "Create a free account to start browsing opportunities on HireFlow."
+              : "An active Pro subscription is required to access the full job listings and connect with employers."}
+          </p>
+          <Link to={blocked === "login" ? "/login" : "/upgrade"}>
+            <Button>{blocked === "login" ? "Log in" : "Upgrade to Pro"}</Button>
+          </Link>
+        </div>
+      ) : loading ? (
         <div className="flex justify-center py-16">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
         </div>

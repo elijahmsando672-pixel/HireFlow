@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, MapPin } from "lucide-react";
+import { ArrowLeft, CheckCircle2, MapPin, Lock } from "lucide-react";
 import { api } from "../lib/api";
 import type { Job } from "../lib/types";
 import { formatSalary, timeAgo } from "../lib/format";
@@ -13,7 +13,7 @@ import { Field, TextArea, TextInput } from "../components/Field";
 export default function JobDetails() {
   const { id } = useParams();
   const jobId = parseInt(id || "0", 10);
-  const { user } = useAuth();
+  const { user, subscriptionStatus } = useAuth();
 
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,6 +40,7 @@ export default function JobDetails() {
   }, [jobId]);
 
   const isOwner = user && job?.postedBy === user.id;
+  const isPro = subscriptionStatus?.plan === "PRO" && subscriptionStatus?.isActive;
 
   const handleProposal = async (e: FormEvent) => {
     e.preventDefault();
@@ -153,28 +154,38 @@ export default function JobDetails() {
                     The client can now review your proposal. Track its status in{" "}
                     <Link to="/my-proposals" className="font-semibold text-indigo-600">
                       My proposals
-                    </Link>.
+                    </Link>
+                    .
                   </p>
                 </div>
-              ) : (
-                <>
+              ) : isPro ? (
+                <form onSubmit={handleProposal} className="space-y-4">
                   <h3 className="text-base font-bold text-slate-900">Apply for this job</h3>
-                  <form onSubmit={handleProposal} className="mt-4 space-y-4">
-                    {formError && <div className="rounded-lg bg-red-50 px-3 py-2.5 text-sm font-medium text-red-700">{formError}</div>}
-                    <Field label="Proposed rate (KSh)">
-                      <TextInput type="number" min={0} required placeholder="e.g. 30000" value={rate} onChange={(e) => setRate(e.target.value)} />
-                    </Field>
-                    <Field label="Delivery timeline (days)">
-                      <TextInput type="number" min={1} required placeholder="e.g. 14" value={timelineDays} onChange={(e) => setTimelineDays(e.target.value)} />
-                    </Field>
-                    <Field label="Cover letter">
-                      <TextArea rows={5} required placeholder="Why are you a good fit for this job?" value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)} />
-                    </Field>
-                    <Button type="submit" disabled={submitting} className="w-full">
-                      {submitting ? "Sending…" : "Submit proposal"}
-                    </Button>
-                  </form>
-                </>
+                  {formError && <div className="rounded-lg bg-red-50 px-3 py-2.5 text-sm font-medium text-red-700">{formError}</div>}
+                  <Field label="Proposed rate (KSh)">
+                    <TextInput type="number" min={0} required placeholder="e.g. 30000" value={rate} onChange={(e) => setRate(e.target.value)} />
+                  </Field>
+                  <Field label="Delivery timeline (days)">
+                    <TextInput type="number" min={1} required placeholder="e.g. 14" value={timelineDays} onChange={(e) => setTimelineDays(e.target.value)} />
+                  </Field>
+                  <Field label="Cover letter">
+                    <TextArea rows={5} required placeholder="Why are you a good fit for this job?" value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)} />
+                  </Field>
+                  <Button type="submit" disabled={submitting} className="w-full">
+                    {submitting ? "Sending…" : "Submit proposal"}
+                  </Button>
+                </form>
+              ) : (
+                <div className="text-center">
+                  <Lock className="mx-auto h-10 w-10 text-indigo-600" />
+                  <h3 className="mt-3 text-base font-bold text-slate-900">Pro Feature</h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Upgrade to HireFlow Pro to submit proposals and apply to jobs.
+                  </p>
+                  <Link to="/upgrade">
+                    <Button className="mt-4 w-full">Upgrade to Pro</Button>
+                  </Link>
+                </div>
               )}
             </div>
           )}

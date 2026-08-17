@@ -12,7 +12,7 @@ const NAV = [
 ];
 
 export function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, subscriptionStatus } = useAuth();
   const location = useLocation();
 
   const isActive = (to: string) =>
@@ -21,6 +21,7 @@ export function Navbar() {
   const role = user?.role || "both";
   const isClient = role === "client" || role === "both";
   const isFreelancer = role === "freelancer" || role === "both";
+  const isPro = subscriptionStatus?.plan === "PRO" && subscriptionStatus?.isActive;
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -68,6 +69,21 @@ export function Navbar() {
                 className="hidden rounded-lg border border-indigo-200 px-3 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 lg:block"
               >
                 Post a job
+              </Link>
+            )}
+            {!isPro ? (
+              <Link
+                to="/upgrade"
+                className="hidden rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 sm:block"
+              >
+                Upgrade to Pro
+              </Link>
+            ) : (
+              <Link
+                to="/upgrade"
+                className="hidden rounded-lg border border-indigo-200 px-3 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 sm:block"
+              >
+                Manage Subscription
               </Link>
             )}
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">

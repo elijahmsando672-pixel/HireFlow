@@ -180,3 +180,28 @@ export interface PublicUser {
   rating: number | null;
   reviewCount: number;
 }
+
+export type SubscriptionStatus = "ACTIVE" | "PENDING" | "EXPIRED" | "CANCELLED" | "FAILED" | "NONE";
+
+export interface Subscription {
+  id: number;
+  plan: "FREE" | "PRO";
+  status: Exclude<SubscriptionStatus, "NONE">;
+  provider: string;
+  providerSubscriptionId?: string;
+  providerTransactionId?: string;
+  amount: number;
+  currency: string;
+  startedAt?: string;
+  expiresAt?: string;
+  cancelledAt?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface SubscriptionStatusResponse {
+  plan: string;
+  status: SubscriptionStatus;
+  isActive: boolean;
+  expiresAt?: string;
+}

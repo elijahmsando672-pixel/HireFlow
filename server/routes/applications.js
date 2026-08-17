@@ -1,10 +1,10 @@
 const express = require("express");
 const db = require("../db");
-const { requireAuth } = require("../middleware");
+const { requireAuth, requirePlan } = require("../middleware");
 
 const router = express.Router();
 
-router.post("/", requireAuth, (req, res) => {
+router.post("/", requireAuth, requirePlan("PRO"), (req, res) => {
     const jobId = parseInt(req.body.jobId, 10);
 
     const job = db.prepare("SELECT * FROM jobs WHERE id = ?").get(jobId);

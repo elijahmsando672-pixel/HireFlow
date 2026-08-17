@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const db = require("./db");
 const { JWT_SECRET, ADMIN_EMAIL } = require("./config");
+const entitlement = require("./services/entitlement");
 
 function requireAuth(req, res, next) {
     const header = req.headers.authorization || "";
@@ -19,9 +20,6 @@ function requireAuth(req, res, next) {
     }
 }
 
-// Requires an authenticated user with an admin role. Users can only be
-// promoted to admin via the database (UPDATE users SET role='admin' ...) or
-// by matching ADMIN_EMAIL. Self-registration can never assign admin.
 function requireAdmin(req, res, next) {
     requireAuth(req, res, (err) => {
         if (err) return;
@@ -37,4 +35,80 @@ function requireAdmin(req, res, next) {
     });
 }
 
-module.exports = { requireAuth, requireAdmin };
+function subscriptionError() {
+    return {
+        success: false,
+        error: {
+            code: "SUBSCRIPTION_REQUIRED",
+            message: "A Pro subscription is required for this feature."
+        }
+    };
+}
+
+function requirePlan(plan) {
+    const normalizedPlan = String(plan || "").trim().toUpperCase();
+
+    return (req, res, next) => {
+        if (!entitlement.isPaywallEnabled()) {
+            return next();
+        }
+
+        requireAuth(req, res, () => {
+            if (req.userId === undefined) return;
+
+            const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.userId);
+            if (!user) {
+                return res.status(404).json({ error: "User not found." });
+            }
+
+            if (user.role === "admin") {
+                return next();
+            }
+
+            if (!entitlement.hasPlan(req.userId, normalizedPlan)) {
+                return res.status(402).json(subscriptionError());
+            }
+
+            next();
+        });
+    };
+}
+
+function requireSubscription(options = {}) {
+    return (req, res, next) => {
+        if (!entitlement.isPaywallEnabled()) {
+            return next();
+        }
+
+        requireAuth(req, res, () => {
+            if (req.userId === undefined) return;
+
+            const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.userId);
+            if (!user) {
+                return res.status(404).json({ error: "User not found." });
+            }
+
+            if (user.role === "admin") {
+                return next();
+            }
+
+            if (options.allowJobOwner) {
+                const id = parseInt(req.params.id, 10);
+                if (id) {
+                    const job = db.prepare("SELECT * FROM jobs WHERE id = ?").get(id);
+                    if (job && job.posted_by === req.userId) {
+                        return next();
+                    }
+                }
+            }
+
+            if (!entitlement.isSubscriptionActive(req.userId)) {
+                return res.status(402).json(subscriptionError());
+            }
+
+            next();
+        });
+    };
+}
+
+module.exports = { requireAuth, requireAdmin, requirePlan, requireSubscription };

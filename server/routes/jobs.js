@@ -1,6 +1,6 @@
 const express = require("express");
 const db = require("../db");
-const { requireAuth } = require("../middleware");
+const { requireAuth, requireSubscription } = require("../middleware");
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ function serializeJob(row) {
     };
 }
 
-router.get("/", (req, res) => {
+router.get("/", requireSubscription(), (req, res) => {
     const { search, category, location, type, sort } = req.query;
 
     let sql = `
@@ -141,7 +141,7 @@ router.get("/:id/proposals", requireAuth, (req, res) => {
     });
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", requireSubscription({ allowJobOwner: true }), (req, res) => {
     const id = parseInt(req.params.id, 10);
 
     if (!id) {

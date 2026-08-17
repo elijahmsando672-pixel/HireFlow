@@ -1,6 +1,7 @@
 const express = require("express");
 const { z } = require("zod");
 const db = require("../db");
+const { requireSubscription } = require("../middleware");
 
 const router = express.Router();
 
@@ -159,10 +160,7 @@ function handleList(req, res) {
 router.get("/", handleList);
 
 // Alias endpoint: same engine, distinct route for search-focused clients.
-router.get("/search", (req, res) => {
-    if (!req.query.search) req.query.search = req.query.q;
-    handleList(req, res);
-});
+router.get("/search", handleList);
 
 router.get("/featured", (req, res) => {
     const limit = Math.min(parseInt(req.query.limit, 10) || 10, 50);

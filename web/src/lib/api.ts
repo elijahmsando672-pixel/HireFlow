@@ -9,6 +9,8 @@ import type {
   ProposalWithCandidate,
   PublicUser,
   Review,
+  Subscription,
+  SubscriptionStatusResponse,
   User
 } from "./types";
 
@@ -18,9 +20,11 @@ const USER_KEY = "hireflow_user";
 
 export class ApiError extends Error {
   status: number;
-  constructor(message: string, status: number) {
+  code?: string;
+  constructor(message: string, status: number, code?: string) {
     super(message);
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -91,7 +95,10 @@ async function apiRequest<T>(path: string, options: RequestOptions = {}): Promis
   }
 
   if (!response.ok) {
-    throw new ApiError(data.error || "Request failed.", response.status);
+    const err = data.error;
+    const message = typeof err === "string" ? err : err?.message || "Request failed.";
+    const code = typeof err === "string" ? undefined : err?.code;
+    throw new ApiError(message, response.status, code);
   }
 
   return data as T;
@@ -248,5 +255,23 @@ export const api = {
       body: JSON.stringify({ gigId })
     }),
   unsaveGig: (gigId: number) =>
-    apiRequest<{ saved: boolean }>("/saved/gigs/" + gigId, { method: "DELETE" })
+    apiRequest<{ saved: boolean }>("/saved/gigs/" + gigId, { method: "DELETE" }),
+
+  subscriptionStatus: () =>
+    apiRequest<{ success: boolean; data: SubscriptionStatusResponse }>("/subscriptions/status"),
+
+  subscriptionCheckout: () =>
+    apiRequest<{
+      success: boolean;
+      data: {
+        subscription: Subscription;
+        checkoutUrl?: string;
+        orderTrackingId?: string;
+        alreadyActive?: boolean;
+        mock?: boolean;
+      };
+    }>("/subscriptions/checkout", { method: "POST" }),
+
+  mySubscriptions: () =>
+    apiRequest<{ success: boolean; data: { subscriptions: Subscription[] } }>("/subscriptions/me")
 };

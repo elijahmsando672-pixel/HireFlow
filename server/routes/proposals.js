@@ -1,7 +1,7 @@
 const express = require("express");
 const { z } = require("zod");
 const db = require("../db");
-const { requireAuth } = require("../middleware");
+const { requireAuth, requirePlan } = require("../middleware");
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ const CreateProposalSchema = z.object({
     coverLetter: z.string().trim().min(1).max(10000)
 });
 
-router.post("/", requireAuth, (req, res) => {
+router.post("/", requireAuth, requirePlan("PRO"), (req, res) => {
     const parsed = CreateProposalSchema.safeParse(req.body);
     if (!parsed.success) {
         return res.status(400).json({ error: parsed.error.issues[0].message });

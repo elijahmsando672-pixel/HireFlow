@@ -321,6 +321,18 @@ async function apiGetAggregatedJob(id) {
     return apiRequest("/aggregated-jobs/" + id);
 }
 
+async function apiGetSubscriptionStatus() {
+    return apiRequest("/subscriptions/status");
+}
+
+async function apiGetMySubscription() {
+    return apiRequest("/subscriptions/me");
+}
+
+async function apiCreateCheckout() {
+    return apiRequest("/subscriptions/checkout", { method: "POST" });
+}
+
 function formatBudget(job) {
     const min = job.budgetMin;
     const max = job.budgetMax;

@@ -31,5 +31,22 @@ module.exports = {
     ADZUNA_SEARCH_TERMS: (process.env.ADZUNA_SEARCH_TERMS || "software developer,web developer,javascript developer,python developer")
         .split(",")
         .map((term) => term.trim())
-        .filter(Boolean)
+        .filter(Boolean),
+    // Subscription paywall
+    SUBSCRIPTION_ENABLED: process.env.SUBSCRIPTION_ENABLED !== "false",
+    PAYWALL_ENABLED: process.env.PAYWALL_ENABLED !== "false",
+    SUBSCRIPTION_PROVIDER: (process.env.SUBSCRIPTION_PROVIDER || "mock").trim().toLowerCase(),
+    SUBSCRIPTION_PRICE_KES: int(process.env.SUBSCRIPTION_PRICE_KES, 500),
+    SUBSCRIPTION_CURRENCY: (process.env.SUBSCRIPTION_CURRENCY || "KES").trim().toUpperCase(),
+    SUBSCRIPTION_DURATION_DAYS: int(process.env.SUBSCRIPTION_DURATION_DAYS, 30),
+    SUBSCRIPTION_PRO_PLAN: (process.env.SUBSCRIPTION_PRO_PLAN || "PRO").trim().toUpperCase(),
+    FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
+    // Pesapal payment gateway
+    PESAPAL_MODE: (process.env.PESAPAL_MODE || "mock").trim().toLowerCase(),
+    PESAPAL_CONSUMER_KEY: process.env.PESAPAL_CONSUMER_KEY || null,
+    PESAPAL_CONSUMER_SECRET: process.env.PESAPAL_CONSUMER_SECRET || null,
+    PESAPAL_BASE_URL: process.env.PESAPAL_BASE_URL || "https://cybqa.pesapal.com/pesapalv3/api",
+    PESAPAL_IFRAME_URL: process.env.PESAPAL_IFRAME_URL || "https://cybqa.pesapal.com/iframeserver",
+    PESAPAL_IPN_URL: process.env.PESAPAL_IPN_URL || null,
+    PESAPAL_CALLBACK_URL: process.env.PESAPAL_CALLBACK_URL || null
 };

@@ -53,6 +53,7 @@ app.use("/api/messages", require("./routes/messages"));
 app.use("/api/saved", require("./routes/saved"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/aggregated-jobs", require("./routes/aggregatedJobs"));
+app.use("/api/subscriptions", require("./routes/subscriptions"));
 app.use("/api/admin", require("./routes/admin"));
 
 // ---- Static serving + SPA fallback ----

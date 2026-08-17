@@ -255,9 +255,59 @@ db.exec(`
 
     CREATE INDEX IF NOT EXISTS idx_sync_logs_source ON aggregation_sync_logs(source);
     CREATE INDEX IF NOT EXISTS idx_sync_logs_started ON aggregation_sync_logs(started_at);
+
+    CREATE TABLE IF NOT EXISTS subscriptions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        plan TEXT NOT NULL DEFAULT 'FREE',
+        status TEXT NOT NULL DEFAULT 'PENDING',
+        provider TEXT NOT NULL DEFAULT 'MOCK',
+        provider_subscription_id TEXT,
+        provider_transaction_id TEXT,
+        amount INTEGER NOT NULL DEFAULT 0,
+        currency TEXT NOT NULL DEFAULT 'KES',
+        started_at TEXT,
+        expires_at TEXT,
+        cancelled_at TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriptions_active_pro_user ON subscriptions(user_id) WHERE status = 'ACTIVE' AND plan = 'PRO';
+    CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
+    CREATE INDEX IF NOT EXISTS idx_subscriptions_provider_txn ON subscriptions(provider_transaction_id);
+    CREATE INDEX IF NOT EXISTS idx_subscriptions_expires ON subscriptions(expires_at);
 `);
 
-const jobColumns = db.prepare("PRAGMA table_info(jobs)").all();
+    const subscriptionColumns = db.prepare("PRAGMA table_info(subscriptions)").all();
+    const subColumnNames = subscriptionColumns.map((column) => column.name);
+
+    if (!subColumnNames.includes("provider")) {
+        db.exec("ALTER TABLE subscriptions ADD COLUMN provider TEXT NOT NULL DEFAULT 'MOCK'");
+    }
+    if (!subColumnNames.includes("provider_subscription_id")) {
+        db.exec("ALTER TABLE subscriptions ADD COLUMN provider_subscription_id TEXT");
+    }
+    if (!subColumnNames.includes("provider_transaction_id")) {
+        db.exec("ALTER TABLE subscriptions ADD COLUMN provider_transaction_id TEXT");
+    }
+    if (!subColumnNames.includes("cancelled_at")) {
+        db.exec("ALTER TABLE subscriptions ADD COLUMN cancelled_at TEXT");
+    }
+    if (!subColumnNames.includes("updated_at")) {
+        db.exec("ALTER TABLE subscriptions ADD COLUMN updated_at TEXT NOT NULL DEFAULT (datetime('now'))");
+    }
+
+    db.prepare("UPDATE subscriptions SET plan = 'PRO' WHERE plan = 'monthly'").run();
+    db.prepare("UPDATE subscriptions SET status = 'ACTIVE' WHERE status = 'active'").run();
+    db.prepare("UPDATE subscriptions SET status = 'PENDING' WHERE status = 'pending'").run();
+    db.prepare("UPDATE subscriptions SET status = 'EXPIRED' WHERE status = 'expired'").run();
+    db.prepare("UPDATE subscriptions SET status = 'CANCELLED' WHERE status = 'cancelled'").run();
+    db.prepare("UPDATE subscriptions SET status = 'FAILED' WHERE status = 'failed'").run();
+
+    const jobColumns = db.prepare("PRAGMA table_info(jobs)").all();
 if (!jobColumns.some((column) => column.name === "posted_by")) {
     db.exec("ALTER TABLE jobs ADD COLUMN posted_by INTEGER");
 }
