@@ -2,6 +2,10 @@ const express = require("express");
 const db = require("../db");
 const { requireAuth } = require("../middleware");
 
+function safeJsonParse(str, fallback) {
+    try { return JSON.parse(str); } catch { return fallback; }
+}
+
 const router = express.Router();
 
 function serializeGig(row) {
@@ -11,7 +15,7 @@ function serializeGig(row) {
         title: row.title,
         description: row.description,
         category: row.category,
-        packages: JSON.parse(row.packages),
+        packages: safeJsonParse(row.packages, []),
         createdAt: row.created_at,
         seller: {
             id: row.user_id,

@@ -17,6 +17,15 @@ export interface User {
   github?: string;
   twitter?: string;
   portfolio?: string;
+  companyName?: string;
+  companyWebsite?: string;
+  companyEmail?: string;
+  companyPhone?: string;
+  companyCountry?: string;
+  companyDescription?: string;
+  isVerified: boolean;
+  verifiedAt?: string;
+  suspended: boolean;
   createdAt?: string;
 }
 
@@ -32,6 +41,7 @@ export interface Job {
   requirements?: string[];
   posted: string;
   postedBy?: number | null;
+  posterVerified?: boolean;
   proposalCount?: number;
 }
 
@@ -170,6 +180,7 @@ export interface PublicUser {
   id: number;
   firstName: string;
   lastName?: string;
+  role?: string;
   headline?: string;
   bio?: string;
   skills: string[];
@@ -177,6 +188,9 @@ export interface PublicUser {
   linkedin?: string;
   twitter?: string;
   portfolio?: string;
+  companyName?: string;
+  companyCountry?: string;
+  isVerified: boolean;
   rating: number | null;
   reviewCount: number;
 }
@@ -204,4 +218,39 @@ export interface SubscriptionStatusResponse {
   status: SubscriptionStatus;
   isActive: boolean;
   expiresAt?: string;
+}
+
+export interface Verification {
+  id: number;
+  userId: number;
+  companyName: string;
+  companyWebsite?: string;
+  companyEmail: string;
+  companyPhone?: string;
+  companyCountry: string;
+  companyDescription: string;
+  businessInfo?: string;
+  status: "pending" | "approved" | "rejected";
+  adminNotes?: string;
+  reviewedBy?: number;
+  submittedAt: string;
+  reviewedAt?: string;
+}
+
+export interface AdminVerification extends Verification {
+  firstName?: string;
+  lastName?: string;
+  userEmail?: string;
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  totalJobs: number;
+  totalApplications: number;
+  totalContracts: number;
+  totalGigs: number;
+  verifiedEmployers: number;
+  pendingVerifications: number;
+  suspendedUsers: number;
+  usersByRole: Record<string, number>;
 }

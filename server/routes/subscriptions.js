@@ -81,15 +81,15 @@ router.post("/checkout", requireAuth, async (req, res) => {
 
     const reference = "HF-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
 
-    const subscription = subscriptionService.createSubscription(req.userId, {
-        plan: SUBSCRIPTION_PRO_PLAN,
-        status: "PENDING",
-        provider: payments.getProvider().name || "MOCK",
-        amount: SUBSCRIPTION_PRICE_KES,
-        currency: SUBSCRIPTION_CURRENCY
-    });
-
     try {
+        const subscription = subscriptionService.createSubscription(req.userId, {
+            plan: SUBSCRIPTION_PRO_PLAN,
+            status: "PENDING",
+            provider: payments.getProvider().name || "MOCK",
+            amount: SUBSCRIPTION_PRICE_KES,
+            currency: SUBSCRIPTION_CURRENCY
+        });
+
         const provider = payments.getProvider();
         const result = await provider.createCheckout({
             reference,
@@ -117,22 +117,25 @@ router.post("/checkout", requireAuth, async (req, res) => {
             }
         });
     } catch (error) {
-        subscriptionService.updateSubscription(subscription.id, { status: "FAILED" });
+        console.error("Subscription checkout error:", error.message);
         res.status(502).json({ success: false, error: { code: "PAYMENT_PROVIDER_ERROR", message: "Payment provider error. Please try again." } });
     }
 });
 
 router.get("/callback", async (req, res) => {
     const trackingId = req.query.order_tracking_id;
-    const status = req.query.payment_status_description || "SUCCESS";
 
-    if (!trackingId) {
+    if (!trackingId || typeof trackingId !== "string" || !trackingId.startsWith("HF-")) {
         return res.redirect(FRONTEND_URL + "/upgrade?status=error");
     }
 
     try {
         const provider = payments.getProvider();
         const result = provider.processCallback(req.query);
+
+        if (!result.orderTrackingId || result.orderTrackingId !== trackingId) {
+            return res.redirect(FRONTEND_URL + "/upgrade?status=error");
+        }
 
         const subscription = subscriptionService.findSubscriptionByProviderTransactionId(result.orderTrackingId);
         if (!subscription) {
@@ -159,10 +162,15 @@ router.get("/callback", async (req, res) => {
 
 router.post("/ipn", async (req, res) => {
     const body = req.body || {};
+
+    if (!body.order_tracking_id || typeof body.order_tracking_id !== "string" || !body.order_tracking_id.startsWith("HF-")) {
+        return res.status(200).send("OK");
+    }
+
     const provider = payments.getProvider();
     const result = provider.processIPN(body);
 
-    if (!result.orderTrackingId) {
+    if (!result.orderTrackingId || result.orderTrackingId !== body.order_tracking_id) {
         return res.status(200).send("OK");
     }
 
@@ -172,17 +180,19 @@ router.post("/ipn", async (req, res) => {
             return res.status(200).send("OK");
         }
 
+        if (subscription.status === "ACTIVE" || subscription.status === "CANCELLED") {
+            return res.status(200).send("OK");
+        }
+
         const ok = result.status === "SUCCESS" || result.status === "COMPLETED" || result.status === "PESAPAL_PARTIAL_REFUNDS";
         const newStatus = ok ? "ACTIVE" : "FAILED";
 
-        if (subscription.status !== newStatus) {
-            const updates = { status: newStatus };
-            if (ok) {
-                updates.startedAt = new Date().toISOString();
-                updates.expiresAt = new Date(Date.now() + SUBSCRIPTION_DURATION_DAYS * 86400000).toISOString();
-            }
-            subscriptionService.updateSubscription(subscription.id, updates);
+        const updates = { status: newStatus };
+        if (ok) {
+            updates.startedAt = new Date().toISOString();
+            updates.expiresAt = new Date(Date.now() + SUBSCRIPTION_DURATION_DAYS * 86400000).toISOString();
         }
+        subscriptionService.updateSubscription(subscription.id, updates);
 
         res.status(200).send("OK");
     } catch (error) {

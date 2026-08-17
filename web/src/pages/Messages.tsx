@@ -76,8 +76,12 @@ export default function Messages() {
     try {
       await api.sendMessage({ recipientId: activeId, body: body.trim() });
       setBody("");
-      const data = await api.thread(activeId);
-      setMessages(data.messages);
+      const [threadData, convData] = await Promise.all([
+        api.thread(activeId),
+        api.conversations()
+      ]);
+      setMessages(threadData.messages);
+      setConversations(convData.conversations);
     } catch (err) {
       alert((err as Error).message);
     } finally {
@@ -189,6 +193,7 @@ export default function Messages() {
                     value={body}
                     onChange={(e) => setBody(e.target.value)}
                     placeholder="Type a message…"
+                    maxLength={5000}
                     className="flex-1 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
                   <button

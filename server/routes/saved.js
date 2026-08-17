@@ -2,6 +2,10 @@ const express = require("express");
 const db = require("../db");
 const { requireAuth } = require("../middleware");
 
+function safeJsonParse(str, fallback) {
+    try { return JSON.parse(str); } catch { return fallback; }
+}
+
 const router = express.Router();
 
 router.get("/jobs", requireAuth, (req, res) => {
@@ -59,7 +63,7 @@ router.get("/gigs", requireAuth, (req, res) => {
                 title: row.title,
                 description: row.description,
                 category: row.category,
-                packages: JSON.parse(row.packages),
+                packages: safeJsonParse(row.packages, []),
                 seller: {
                     id: row.user_id,
                     firstName: row.first_name,

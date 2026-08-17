@@ -262,6 +262,10 @@ router.post("/:id/cancel", requireAuth, (req, res) => {
         return res.status(400).json({ error: "This contract can no longer be cancelled." });
     }
 
+    if (row.status === "Paid" && row.freelancer_id === req.userId) {
+        return res.status(403).json({ error: "Only the client can cancel a paid contract." });
+    }
+
     db.transaction(() => {
         db.prepare("UPDATE contracts SET status = 'Cancelled' WHERE id = ?").run(id);
 

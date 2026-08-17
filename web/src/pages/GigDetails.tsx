@@ -16,6 +16,17 @@ export default function GigDetails() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  if (!id || isNaN(gigId) || gigId <= 0) {
+    return (
+      <div className="py-24 text-center">
+        <p className="text-slate-500">Invalid gig ID.</p>
+        <Link to="/gigs" className="mt-4 inline-block font-semibold text-indigo-600 hover:text-indigo-700">
+          ← Back to gigs
+        </Link>
+      </div>
+    );
+  }
+
   const [gig, setGig] = useState<Gig | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [selected, setSelected] = useState(0);
@@ -79,7 +90,18 @@ export default function GigDetails() {
     );
   }
 
-  const pkg = gig.packages[selected];
+  const pkg = gig.packages[selected] || gig.packages[0];
+
+  if (!pkg) {
+    return (
+      <div className="py-24 text-center">
+        <p className="text-slate-500">This gig has no packages available.</p>
+        <Link to="/gigs" className="mt-4 inline-block font-semibold text-indigo-600 hover:text-indigo-700">
+          ← Back to gigs
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-up">

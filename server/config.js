@@ -1,7 +1,10 @@
 require("dotenv").config();
 
-if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET must be configured in production.");
+if (!process.env.JWT_SECRET) {
+    if (process.env.NODE_ENV === "production") {
+        throw new Error("JWT_SECRET must be configured in production.");
+    }
+    console.warn("[hireflow] No JWT_SECRET set. Using an insecure default for development only. Do NOT deploy without setting JWT_SECRET.");
 }
 
 function int(value, fallback) {

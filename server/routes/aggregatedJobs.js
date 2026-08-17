@@ -1,7 +1,10 @@
 const express = require("express");
 const { z } = require("zod");
 const db = require("../db");
-const { requireSubscription } = require("../middleware");
+
+function safeJsonParse(str, fallback) {
+    try { return JSON.parse(str); } catch { return fallback; }
+}
 
 const router = express.Router();
 
@@ -41,7 +44,7 @@ function serializeJob(row) {
         companyName: row.company_name,
         companyUrl: row.company_url,
         category: row.category,
-        skills: row.skills ? JSON.parse(row.skills) : [],
+        skills: row.skills ? safeJsonParse(row.skills, []) : [],
         budgetMin: row.budget_min,
         budgetMax: row.budget_max,
         currency: row.currency,
@@ -203,7 +206,7 @@ router.get("/skills", (req, res) => {
 
     const counts = new Map();
     for (const row of rows) {
-        for (const skill of JSON.parse(row.skills)) {
+        for (const skill of safeJsonParse(row.skills, [])) {
             counts.set(skill, (counts.get(skill) || 0) + 1);
         }
     }

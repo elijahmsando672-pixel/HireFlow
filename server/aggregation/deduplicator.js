@@ -10,7 +10,7 @@ const db = require("../db");
 // different content. Identical re-emissions are classified as duplicates.
 
 const SIMILARITY_THRESHOLD = 0.8;
-const SIMILARITY_SCAN_LIMIT = 5000;
+const SIMILARITY_SCAN_LIMIT = 1000;
 
 function collapse(value) {
     return String(value || "")

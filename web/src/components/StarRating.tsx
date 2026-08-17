@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 
 export function StarRating({ rating, count, size = 14 }: { rating: number | null; count?: number; size?: number }) {
-  if (!rating) {
+  if (rating === null || rating === undefined) {
     return <span className="text-sm text-slate-400">No reviews yet</span>;
   }
 

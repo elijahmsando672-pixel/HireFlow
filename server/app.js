@@ -54,15 +54,21 @@ app.use("/api/saved", require("./routes/saved"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/aggregated-jobs", require("./routes/aggregatedJobs"));
 app.use("/api/subscriptions", require("./routes/subscriptions"));
+app.use("/api/verification", require("./routes/verification"));
 app.use("/api/admin", require("./routes/admin"));
 
 // ---- Static serving + SPA fallback ----
 const projectRoot = path.join(__dirname, "..");
 const distDir = path.join(projectRoot, "web", "dist");
-const blocked = ["/server/", "/node_modules/", "/data/", "/.git", "/.qodo/", "/package.json", "/package-lock.json", "/web/"];
+const blocked = ["/server/", "/node_modules/", "/data/", "/.git", "/.qodo/", "/package.json", "/package-lock.json", "/web/", "/.env", "/.env."];
+const sensitiveFiles = [".env", ".env.local", ".env.production", ".env.development", ".env.example", ".gitignore", ".eslintrc", "tsconfig.json", "vitest.config.js", "render.yaml", "railway.json", "vercel.json"];
 
 app.use((req, res, next) => {
     if (blocked.some((prefix) => req.path.startsWith(prefix))) {
+        return res.status(404).json({ error: "Not found" });
+    }
+    const basename = path.basename(req.path);
+    if (sensitiveFiles.includes(basename)) {
         return res.status(404).json({ error: "Not found" });
     }
     next();
@@ -79,11 +85,6 @@ if (fs.existsSync(distDir)) {
         next();
     });
 }
-
-app.use(express.static(projectRoot, {
-    extensions: ["html"],
-    index: "index.html"
-}));
 
 // ---- 404 for unknown API routes ----
 app.use("/api", (req, res) => {

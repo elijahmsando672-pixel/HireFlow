@@ -1,4 +1,6 @@
 import type {
+  AdminStats,
+  AdminVerification,
   Contract,
   Conversation,
   Gig,
@@ -11,7 +13,8 @@ import type {
   Review,
   Subscription,
   SubscriptionStatusResponse,
-  User
+  User,
+  Verification
 } from "./types";
 
 const API_BASE = import.meta.env.VITE_API_URL || "/api";
@@ -41,7 +44,8 @@ export function clearToken(): void {
 }
 
 export function isLoggedIn(): boolean {
-  return !!getToken();
+  const token = getToken();
+  return !!token && token !== "null" && token !== "undefined";
 }
 
 export function logoutUser(): void {
@@ -67,9 +71,11 @@ interface RequestOptions extends RequestInit {
 }
 
 async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json"
-  };
+  const headers: Record<string, string> = {};
+
+  if (options.method && options.method !== "GET" && options.method !== "HEAD") {
+    headers["Content-Type"] = "application/json";
+  }
 
   const token = getToken();
   if (token) headers.Authorization = "Bearer " + token;
@@ -273,5 +279,50 @@ export const api = {
     }>("/subscriptions/checkout", { method: "POST" }),
 
   mySubscriptions: () =>
-    apiRequest<{ success: boolean; data: { subscriptions: Subscription[] } }>("/subscriptions/me")
+    apiRequest<{ success: boolean; data: { subscriptions: Subscription[] } }>("/subscriptions/me"),
+
+  submitVerification: (data: {
+    companyName: string;
+    companyWebsite?: string;
+    companyEmail: string;
+    companyPhone?: string;
+    companyCountry: string;
+    companyDescription: string;
+    businessInfo?: string;
+  }) =>
+    apiRequest<{ verification: Verification }>("/verification/submit", {
+      method: "POST",
+      body: JSON.stringify(data)
+    }),
+
+  getVerificationStatus: () =>
+    apiRequest<{ verification: Verification | null }>("/verification/status"),
+
+  adminGetVerifications: (filters: { status?: string; page?: number; limit?: number } = {}) => {
+    const params = new URLSearchParams();
+    if (filters.status) params.append("status", filters.status);
+    if (filters.page) params.append("page", String(filters.page));
+    if (filters.limit) params.append("limit", String(filters.limit));
+    const qs = params.toString();
+    return apiRequest<{ verifications: AdminVerification[]; total: number; page: number; limit: number }>(
+      "/verification/admin/all" + (qs ? "?" + qs : "")
+    );
+  },
+
+  adminGetVerification: (id: number) =>
+    apiRequest<{ verification: AdminVerification }>("/verification/admin/" + id),
+
+  adminApproveVerification: (id: number) =>
+    apiRequest<{ verification: Verification }>("/verification/admin/" + id + "/approve", {
+      method: "PUT"
+    }),
+
+  adminRejectVerification: (id: number, adminNotes?: string) =>
+    apiRequest<{ verification: Verification }>("/verification/admin/" + id + "/reject", {
+      method: "PUT",
+      body: JSON.stringify({ adminNotes })
+    }),
+
+  adminGetStats: () =>
+    apiRequest<{ stats: AdminStats }>("/verification/admin/stats/overview")
 };

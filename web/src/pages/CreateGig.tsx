@@ -48,12 +48,29 @@ export default function CreateGig() {
     e.preventDefault();
     setError("");
 
-    const cleaned = packages.map((p, i) => ({
-      name: p.name || PACKAGE_NAMES[i] || "Package " + (i + 1),
-      price: parseInt(p.price, 10),
-      description: p.description,
-      deliveryDays: parseInt(p.deliveryDays, 10)
-    }));
+    const cleaned = packages.map((p, i) => {
+      const price = parseInt(p.price, 10);
+      const deliveryDays = parseInt(p.deliveryDays, 10);
+      if (isNaN(price) || price < 0) {
+        setError(`Package ${i + 1}: please enter a valid price.`);
+        return null;
+      }
+      if (isNaN(deliveryDays) || deliveryDays < 1) {
+        setError(`Package ${i + 1}: delivery must be at least 1 day.`);
+        return null;
+      }
+      return {
+        name: p.name || PACKAGE_NAMES[i] || "Package " + (i + 1),
+        price,
+        description: p.description,
+        deliveryDays
+      };
+    });
+
+    if (cleaned.some((p) => p === null)) {
+      setBusy(false);
+      return;
+    }
 
     setBusy(true);
     try {

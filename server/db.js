@@ -12,6 +12,7 @@ const db = new Database(dbPath);
 
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
+db.pragma("wal_checkpoint(PASSIVE)");
 
 db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -156,6 +157,8 @@ db.exec(`
         paid_at TEXT,
         FOREIGN KEY (contract_id) REFERENCES contracts(id) ON DELETE CASCADE
     );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_payments_contract ON payments(contract_id);
 
     CREATE TABLE IF NOT EXISTS saved_jobs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -312,10 +315,61 @@ if (!jobColumns.some((column) => column.name === "posted_by")) {
     db.exec("ALTER TABLE jobs ADD COLUMN posted_by INTEGER");
 }
 
-  const userColumns = db.prepare("PRAGMA table_info(users)").all();
-  if (!userColumns.some((column) => column.name === "role")) {
-      db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'both'");
-  }
+    const userColumns = db.prepare("PRAGMA table_info(users)").all();
+    if (!userColumns.some((column) => column.name === "role")) {
+        db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'both'");
+    }
+    if (!userColumns.some((column) => column.name === "company_name")) {
+        db.exec("ALTER TABLE users ADD COLUMN company_name TEXT");
+    }
+    if (!userColumns.some((column) => column.name === "company_website")) {
+        db.exec("ALTER TABLE users ADD COLUMN company_website TEXT");
+    }
+    if (!userColumns.some((column) => column.name === "company_email")) {
+        db.exec("ALTER TABLE users ADD COLUMN company_email TEXT");
+    }
+    if (!userColumns.some((column) => column.name === "company_phone")) {
+        db.exec("ALTER TABLE users ADD COLUMN company_phone TEXT");
+    }
+    if (!userColumns.some((column) => column.name === "company_country")) {
+        db.exec("ALTER TABLE users ADD COLUMN company_country TEXT");
+    }
+    if (!userColumns.some((column) => column.name === "company_description")) {
+        db.exec("ALTER TABLE users ADD COLUMN company_description TEXT");
+    }
+    if (!userColumns.some((column) => column.name === "is_verified")) {
+        db.exec("ALTER TABLE users ADD COLUMN is_verified INTEGER NOT NULL DEFAULT 0");
+    }
+    if (!userColumns.some((column) => column.name === "verified_at")) {
+        db.exec("ALTER TABLE users ADD COLUMN verified_at TEXT");
+    }
+    if (!userColumns.some((column) => column.name === "suspended")) {
+        db.exec("ALTER TABLE users ADD COLUMN suspended INTEGER NOT NULL DEFAULT 0");
+    }
+
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS employer_verifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            company_name TEXT NOT NULL,
+            company_website TEXT,
+            company_email TEXT NOT NULL,
+            company_phone TEXT,
+            company_country TEXT NOT NULL,
+            company_description TEXT NOT NULL,
+            business_info TEXT,
+            status TEXT NOT NULL DEFAULT 'pending',
+            admin_notes TEXT,
+            reviewed_by INTEGER,
+            submitted_at TEXT NOT NULL DEFAULT (datetime('now')),
+            reviewed_at TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_verifications_user ON employer_verifications(user_id);
+        CREATE INDEX IF NOT EXISTS idx_verifications_status ON employer_verifications(status);
+    `);
 
   // Existing SQLite tables cannot gain CHECK constraints with ALTER TABLE.
   // These triggers apply the same invariant to databases created before it.
@@ -517,6 +571,8 @@ function seedStudio() {
     const existing = db.prepare("SELECT * FROM users WHERE username = ?").get("hireflow_studio");
 
     if (existing) return existing;
+
+    if (process.env.NODE_ENV === "production") return null;
 
     const bcrypt = require("bcryptjs");
 

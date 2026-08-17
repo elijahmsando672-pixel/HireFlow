@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const status = data.data;
       setSubscriptionStatus(status);
       if (status.plan !== "FREE" && status.isActive) {
-        setSubscription({ id: 0, plan: status.plan as any, status: status.status as any, provider: "", amount: 0, currency: "KES", createdAt: "" });
+        setSubscription({ id: 0, plan: "PRO", status: "ACTIVE", provider: "", amount: 0, currency: "KES", createdAt: "" });
       } else {
         setSubscription(null);
       }

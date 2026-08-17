@@ -15,7 +15,7 @@ type Tab = "buyer" | "seller";
 export default function MyOrders() {
   const { user } = useAuth();
   const [params] = useSearchParams();
-  const [tab, setTab] = useState<Tab>(params.get("placed") ? "buyer" : "buyer");
+  const [tab, setTab] = useState<Tab>(params.get("placed") ? "buyer" : "seller");
   const [buyer, setBuyer] = useState<Order[]>([]);
   const [seller, setSeller] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,9 +39,7 @@ export default function MyOrders() {
       .catch(() => {})
       .finally(() => !cancelled && setLoading(false));
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const openReview = (order: Order) => {
@@ -103,11 +101,9 @@ export default function MyOrders() {
 
         {canReview && (
           <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-            {canReview && (
-              <Button variant="secondary" size="sm" onClick={() => openReview(order)}>
-                Leave a review
-              </Button>
-            )}
+            <Button variant="secondary" size="sm" onClick={() => openReview(order)}>
+              Leave a review
+            </Button>
           </div>
         )}
       </div>

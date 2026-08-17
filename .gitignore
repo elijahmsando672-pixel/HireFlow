@@ -2,3 +2,10 @@ node_modules/
 data/
 *.log
 .env
+.env.local
+.env.*.local
+web/dist/
+.qodo/
+.DS_Store
+Thumbs.db
+coverage/

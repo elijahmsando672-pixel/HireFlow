@@ -13,6 +13,18 @@ export default function JobProposals() {
   const { id } = useParams();
   const navigate = useNavigate();
   const jobId = parseInt(id || "0", 10);
+
+  if (!id || isNaN(jobId) || jobId <= 0) {
+    return (
+      <div className="py-24 text-center">
+        <p className="text-slate-500">Invalid job ID.</p>
+        <Link to="/my-jobs" className="mt-4 inline-block font-semibold text-indigo-600">
+          ← Back to my jobs
+        </Link>
+      </div>
+    );
+  }
+
   const [job, setJob] = useState<Job | null>(null);
   const [proposals, setProposals] = useState<ProposalWithCandidate[]>([]);
   const [loading, setLoading] = useState(true);

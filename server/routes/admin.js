@@ -122,7 +122,7 @@ router.post("/sync", async (req, res) => {
         const results = await syncAllSources();
         return res.json({ success: true, data: results });
     } catch (error) {
-        return fail(res, 500, "SYNC_ERROR", error.message);
+        return fail(res, 500, "SYNC_ERROR", "Sync operation failed. Check server logs for details.");
     }
 });
 

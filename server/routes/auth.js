@@ -7,6 +7,10 @@ const { requireAuth } = require("../middleware");
 
 const router = express.Router();
 
+function safeJsonParse(str, fallback) {
+    try { return JSON.parse(str); } catch { return fallback; }
+}
+
 function serializeUser(row) {
     return {
         id: row.id,
@@ -19,12 +23,21 @@ function serializeUser(row) {
         headline: row.headline,
         bio: row.bio,
         education: row.education,
-        skills: row.skills ? JSON.parse(row.skills) : [],
-        interests: row.interests ? JSON.parse(row.interests) : [],
+        skills: row.skills ? safeJsonParse(row.skills, []) : [],
+        interests: row.interests ? safeJsonParse(row.interests, []) : [],
         linkedin: row.linkedin,
         github: row.github,
         twitter: row.twitter,
         portfolio: row.portfolio,
+        companyName: row.company_name,
+        companyWebsite: row.company_website,
+        companyEmail: row.company_email,
+        companyPhone: row.company_phone,
+        companyCountry: row.company_country,
+        companyDescription: row.company_description,
+        isVerified: !!row.is_verified,
+        verifiedAt: row.verified_at,
+        suspended: !!row.suspended,
         createdAt: row.created_at
     };
 }
@@ -38,7 +51,7 @@ function signToken(user) {
     return jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "7d" });
 }
 
-router.post("/register", (req, res) => {
+router.post("/register", async (req, res) => {
     const { firstName, lastName, username, email, phone, password } = req.body;
     const role = normalizeRole(req.body.role);
 
@@ -50,7 +63,7 @@ router.post("/register", (req, res) => {
         return res.status(400).json({ error: "Password must be at least 8 characters." });
     }
 
-    const passwordHash = bcrypt.hashSync(password, SALT_ROUNDS);
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
     const normalizedEmail = email.trim().toLowerCase();
 
     try {
@@ -122,30 +135,37 @@ router.put("/profile", requireAuth, (req, res) => {
     const skills = body.skills !== undefined ? JSON.stringify(body.skills || []) : user.skills;
     const interests = body.interests !== undefined ? JSON.stringify(body.interests || []) : user.interests;
 
-    db.prepare(`
-        UPDATE users SET
-            first_name = ?, last_name = ?, email = ?, phone = ?, role = ?,
-            headline = ?, bio = ?, education = ?,
-            skills = ?, interests = ?,
-            linkedin = ?, github = ?, twitter = ?, portfolio = ?
-        WHERE id = ?
-    `).run(
-        pick("firstName", "first_name", user.first_name),
-        pick("lastName", "last_name", user.last_name),
-        pick("email", "email", user.email),
-        pick("phone", "phone", user.phone),
-        normalizeRole(body.role !== undefined ? body.role : user.role),
-        pick("headline", "headline", user.headline),
-        pick("bio", "bio", user.bio),
-        pick("education", "education", user.education),
-        skills,
-        interests,
-        pick("linkedin", "linkedin", user.linkedin),
-        pick("github", "github", user.github),
-        pick("twitter", "twitter", user.twitter),
-        pick("portfolio", "portfolio", user.portfolio),
-        req.userId
-    );
+    try {
+        db.prepare(`
+            UPDATE users SET
+                first_name = ?, last_name = ?, email = ?, phone = ?, role = ?,
+                headline = ?, bio = ?, education = ?,
+                skills = ?, interests = ?,
+                linkedin = ?, github = ?, twitter = ?, portfolio = ?
+            WHERE id = ?
+        `).run(
+            pick("firstName", "first_name", user.first_name),
+            pick("lastName", "last_name", user.last_name),
+            pick("email", "email", user.email),
+            pick("phone", "phone", user.phone),
+            normalizeRole(body.role !== undefined ? body.role : user.role),
+            pick("headline", "headline", user.headline),
+            pick("bio", "bio", user.bio),
+            pick("education", "education", user.education),
+            skills,
+            interests,
+            pick("linkedin", "linkedin", user.linkedin),
+            pick("github", "github", user.github),
+            pick("twitter", "twitter", user.twitter),
+            pick("portfolio", "portfolio", user.portfolio),
+            req.userId
+        );
+    } catch (error) {
+        if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+            return res.status(409).json({ error: "An account with that email already exists." });
+        }
+        throw error;
+    }
 
     const updated = db.prepare("SELECT * FROM users WHERE id = ?").get(req.userId);
     res.json({ user: serializeUser(updated) });

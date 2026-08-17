@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Search, Sparkles } from "lucide-react";
 import { api } from "../lib/api";
 import type { Gig } from "../lib/types";
+import { useAuth } from "../context/AuthContext";
 import { PageHeader } from "../components/PageHeader";
 import { GigCard } from "../components/GigCard";
 import { EmptyState } from "../components/EmptyState";
@@ -11,6 +12,7 @@ import { Button } from "../components/Button";
 import { CATEGORIES, getSubcategoriesByCategoryId } from "../lib/categories";
 
 export default function Gigs() {
+  const { user } = useAuth();
   const [gigs, setGigs] = useState<Gig[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -63,7 +65,7 @@ export default function Gigs() {
         title="Explore gigs"
         subtitle="Buy professional services with clear pricing and delivery times."
         actions={
-          <LinkToCreateGig />
+          (user?.role === "freelancer" || user?.role === "both") ? <LinkToCreateGig /> : undefined
         }
       />
 

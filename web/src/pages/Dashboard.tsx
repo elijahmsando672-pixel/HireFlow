@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Briefcase, FolderKanban, Handshake, Layers, ShoppingBag } from "lucide-react";
+import { ArrowRight, Briefcase, FolderKanban, Handshake, Layers, ShieldCheck, ShoppingBag } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 import type { Contract, Gig, Job, Order, Proposal } from "../lib/types";
@@ -22,31 +22,33 @@ export default function Dashboard() {
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([
-      api.myJobs(),
-      api.myProposals(),
-      api.myGigs(),
-      api.myOrders(),
-      api.getContracts(),
-      api.getJobs({}),
-      api.getGigs({})
-    ])
-      .then(([jobs, proposals, gigs, myOrders, myContracts, allJobs, allGigs]) => {
+    const load = async () => {
+      try {
+        const [jobs, proposals, gigs, myOrders, myContracts, allJobs, allGigs] = await Promise.allSettled([
+          api.myJobs(),
+          api.myProposals(),
+          api.myGigs(),
+          api.myOrders(),
+          api.getContracts(),
+          api.getJobs({}),
+          api.getGigs({})
+        ]);
         if (cancelled) return;
-        setMyJobs(jobs.jobs);
-        setMyProposals(proposals.proposals);
-        setMyGigs(gigs.gigs);
-        setOrders(myOrders);
-        setContracts(myContracts.contracts);
-        setLatestJobs(allJobs.jobs.slice(0, 3));
-        setLatestGigs(allGigs.gigs.slice(0, 3));
-      })
-      .catch(() => {})
-      .finally(() => !cancelled && setLoading(false));
-
-    return () => {
-      cancelled = true;
+        if (jobs.status === "fulfilled") setMyJobs(jobs.value.jobs);
+        if (proposals.status === "fulfilled") setMyProposals(proposals.value.proposals);
+        if (gigs.status === "fulfilled") setMyGigs(gigs.value.gigs);
+        if (myOrders.status === "fulfilled") setOrders(myOrders.value);
+        if (myContracts.status === "fulfilled") setContracts(myContracts.value.contracts);
+        if (allJobs.status === "fulfilled") setLatestJobs(allJobs.value.jobs.slice(0, 3));
+        if (allGigs.status === "fulfilled") setLatestGigs(allGigs.value.gigs.slice(0, 3));
+      } catch {
+        // individual failures are handled by Promise.allSettled
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     };
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   if (!user) return null;
@@ -119,6 +121,22 @@ export default function Dashboard() {
           <Link to="/add-bio">
             <Button variant="secondary" size="sm">
               Complete profile
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      {isClient && !user.isVerified && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-200 bg-indigo-50 px-5 py-4">
+          <div className="flex items-center gap-3">
+            <ShieldCheck size={20} className="text-indigo-600" />
+            <p className="text-sm font-medium text-indigo-800">
+              Verify your employer account to build trust with job seekers.
+            </p>
+          </div>
+          <Link to="/verify">
+            <Button size="sm">
+              Get Verified
             </Button>
           </Link>
         </div>

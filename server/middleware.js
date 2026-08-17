@@ -93,9 +93,9 @@ function requireSubscription(options = {}) {
             }
 
             if (options.allowJobOwner) {
-                const id = parseInt(req.params.id, 10);
-                if (id) {
-                    const job = db.prepare("SELECT * FROM jobs WHERE id = ?").get(id);
+                const jobId = parseInt(req.params.id || req.params.jobId, 10);
+                if (jobId) {
+                    const job = db.prepare("SELECT * FROM jobs WHERE id = ?").get(jobId);
                     if (job && job.posted_by === req.userId) {
                         return next();
                     }

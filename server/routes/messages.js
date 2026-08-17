@@ -12,6 +12,10 @@ router.post("/", requireAuth, (req, res) => {
         return res.status(400).json({ error: "Message body and recipient are required." });
     }
 
+    if (body.length > 5000) {
+        return res.status(400).json({ error: "Message must be 5000 characters or fewer." });
+    }
+
     if (recipientId === req.userId) {
         return res.status(400).json({ error: "You cannot message yourself." });
     }
@@ -69,18 +73,32 @@ router.get("/:userId", requireAuth, (req, res) => {
         return res.status(404).json({ error: "User not found." });
     }
 
+    const limit = Math.min(parseInt(req.query.limit, 10) || 100, 500);
+    const before = req.query.before ? parseInt(req.query.before, 10) : null;
+
     db.prepare(`
         UPDATE messages SET read = 1
         WHERE sender_id = ? AND recipient_id = ? AND read = 0
     `).run(userId, req.userId);
 
-    const rows = db.prepare(`
+    let sql = `
         SELECT m.*, u.first_name, u.last_name
         FROM messages m
         JOIN users u ON u.id = m.sender_id
         WHERE (m.sender_id = ? AND m.recipient_id = ?) OR (m.sender_id = ? AND m.recipient_id = ?)
-        ORDER BY m.created_at ASC
-    `).all(req.userId, userId, userId, req.userId);
+    `;
+    const params = [req.userId, userId, userId, req.userId];
+
+    if (before) {
+        sql += " AND m.id < ?";
+        params.push(before);
+    }
+
+    sql += " ORDER BY m.created_at DESC LIMIT ?";
+    params.push(limit);
+
+    const rows = db.prepare(sql).all(...params);
+    rows.reverse();
 
     res.json({
         messages: rows.map(function (row) {

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ShieldCheck } from "lucide-react";
 import type { Job } from "../lib/types";
 import { formatSalary, timeAgo } from "../lib/format";
 import { CategoryBadge } from "./CategoryBadge";
@@ -15,7 +16,15 @@ export function JobCard({ job }: { job: Job }) {
         <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-700">{job.title}</h3>
         <CategoryBadge category={job.category} />
       </div>
-      <p className="mt-1 text-sm font-semibold text-indigo-700">{job.company}</p>
+      <div className="mt-1 flex items-center gap-2">
+        <p className="text-sm font-semibold text-indigo-700">{job.company}</p>
+        {job.posterVerified && (
+          <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
+            <ShieldCheck size={10} />
+            Verified
+          </span>
+        )}
+      </div>
       <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600">
         {[job.location, job.type, formatSalary(job.salary), "Posted " + timeAgo(job.posted), proposals + (proposals === 1 ? " proposal" : " proposals")].map((item, i) => (
           <span key={i} className="rounded-md bg-slate-100 px-2 py-1">

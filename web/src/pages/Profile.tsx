@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, ExternalLink, Github, Linkedin, MessageSquare, Twitter } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github, Linkedin, MessageSquare, ShieldCheck, Twitter } from "lucide-react";
 import { api } from "../lib/api";
 import type { PublicUser } from "../lib/types";
 import { initials } from "../lib/format";
@@ -19,6 +19,17 @@ export default function Profile() {
   const userId = parseInt(id || "0", 10);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  if (!id || isNaN(userId) || userId <= 0) {
+    return (
+      <div className="py-24 text-center">
+        <p className="text-slate-500">Invalid user ID.</p>
+        <button onClick={() => navigate(-1)} className="mt-4 font-semibold text-indigo-600">
+          ← Go back
+        </button>
+      </div>
+    );
+  }
 
   const [profile, setProfile] = useState<PublicUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,9 +86,17 @@ export default function Profile() {
                 {initials(profile.firstName, profile.lastName)}
               </span>
               <div className="pb-1">
-                <h1 className="text-xl font-black text-slate-900">
-                  {profile.firstName} {profile.lastName}
-                </h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-black text-slate-900">
+                    {profile.firstName} {profile.lastName}
+                  </h1>
+                  {profile.isVerified && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                      <ShieldCheck size={12} />
+                      Verified
+                    </span>
+                  )}
+                </div>
                 {profile.headline && <p className="text-sm font-medium text-indigo-700">{profile.headline}</p>}
               </div>
             </div>

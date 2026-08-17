@@ -32,13 +32,19 @@ export default function PostJob() {
     setError("");
     setBusy(true);
     try {
+      const salaryValue = parseInt(salary, 10);
+      if (isNaN(salaryValue) || salaryValue < 0) {
+        setError("Please enter a valid salary amount.");
+        setBusy(false);
+        return;
+      }
       await api.postJob({
         title,
         company,
         location,
         type,
         category: subcategory || categoryId,
-        salary: parseInt(salary, 10),
+        salary: salaryValue,
         description,
         requirements: requirements
           .split("\n")

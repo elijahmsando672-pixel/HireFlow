@@ -1,6 +1,10 @@
 const express = require("express");
 const db = require("../db");
 
+function safeJsonParse(str, fallback) {
+    try { return JSON.parse(str); } catch { return fallback; }
+}
+
 const router = express.Router();
 
 router.get("/:id", (req, res) => {
@@ -28,11 +32,14 @@ router.get("/:id", (req, res) => {
             role: user.role || "both",
             headline: user.headline,
             bio: user.bio,
-            skills: user.skills ? JSON.parse(user.skills) : [],
+            skills: user.skills ? safeJsonParse(user.skills, []) : [],
             github: user.github,
             linkedin: user.linkedin,
             twitter: user.twitter,
             portfolio: user.portfolio,
+            companyName: user.company_name,
+            companyCountry: user.company_country,
+            isVerified: !!user.is_verified,
             rating: ratingRow.avg_rating ? Math.round(ratingRow.avg_rating * 10) / 10 : null,
             reviewCount: ratingRow.n || 0
         }

@@ -2,6 +2,10 @@ const express = require("express");
 const db = require("../db");
 const { requireAuth, requireSubscription } = require("../middleware");
 
+function safeJsonParse(str, fallback) {
+    try { return JSON.parse(str); } catch { return fallback; }
+}
+
 const router = express.Router();
 
 function serializeJob(row) {
@@ -14,9 +18,10 @@ function serializeJob(row) {
         category: row.category,
         salary: row.salary,
         description: row.description,
-        requirements: row.requirements ? JSON.parse(row.requirements) : [],
+        requirements: row.requirements ? safeJsonParse(row.requirements, []) : [],
         posted: row.posted,
         postedBy: row.posted_by || null,
+        posterVerified: !!row.poster_verified,
         proposalCount: row.proposal_count || 0
     };
 }
@@ -25,7 +30,9 @@ router.get("/", requireSubscription(), (req, res) => {
     const { search, category, location, type, sort } = req.query;
 
     let sql = `
-        SELECT j.*, (SELECT COUNT(*) FROM proposals p WHERE p.job_id = j.id) AS proposal_count
+        SELECT j.*, 
+               (SELECT COUNT(*) FROM proposals p WHERE p.job_id = j.id) AS proposal_count,
+               (SELECT u.is_verified FROM users u WHERE u.id = j.posted_by) AS poster_verified
         FROM jobs j WHERE 1 = 1
     `;
     const params = [];
@@ -93,7 +100,9 @@ router.post("/", requireAuth, (req, res) => {
 
 router.get("/mine", requireAuth, (req, res) => {
     const rows = db.prepare(`
-        SELECT j.*, (SELECT COUNT(*) FROM proposals p WHERE p.job_id = j.id) AS proposal_count
+        SELECT j.*, 
+               (SELECT COUNT(*) FROM proposals p WHERE p.job_id = j.id) AS proposal_count,
+               (SELECT u.is_verified FROM users u WHERE u.id = j.posted_by) AS poster_verified
         FROM jobs j
         WHERE j.posted_by = ?
         ORDER BY j.posted DESC
@@ -131,7 +140,7 @@ router.get("/:id/proposals", requireAuth, (req, res) => {
             firstName: row.first_name,
             lastName: row.last_name,
             headline: row.headline,
-            skills: row.skills ? JSON.parse(row.skills) : [],
+            skills: row.skills ? safeJsonParse(row.skills, []) : [],
             coverLetter: row.cover_letter,
             rate: row.rate,
             timelineDays: row.timeline_days,
@@ -149,7 +158,9 @@ router.get("/:id", requireSubscription({ allowJobOwner: true }), (req, res) => {
     }
 
     const row = db.prepare(`
-        SELECT j.*, (SELECT COUNT(*) FROM proposals p WHERE p.job_id = j.id) AS proposal_count
+        SELECT j.*, 
+               (SELECT COUNT(*) FROM proposals p WHERE p.job_id = j.id) AS proposal_count,
+               (SELECT u.is_verified FROM users u WHERE u.id = j.posted_by) AS poster_verified
         FROM jobs j WHERE j.id = ?
     `).get(id);
 

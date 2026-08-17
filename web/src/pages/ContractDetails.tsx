@@ -36,6 +36,17 @@ export default function ContractDetails() {
   const contractId = parseInt(id || "0", 10);
   const { user } = useAuth();
 
+  if (!id || isNaN(contractId) || contractId <= 0) {
+    return (
+      <div className="py-24 text-center">
+        <p className="text-slate-500">Invalid contract ID.</p>
+        <Link to="/contracts" className="mt-4 inline-block font-semibold text-indigo-600">
+          ← Back to contracts
+        </Link>
+      </div>
+    );
+  }
+
   const [contract, setContract] = useState<Contract | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -90,7 +101,9 @@ export default function ContractDetails() {
   const canPay = isClient && status === "Active" && !contract.payment;
   const canDeliver = isFreelancer && status === "Paid";
   const canComplete = isClient && status === "Delivered";
-  const canCancel = ["Active", "Paid", "Delivered"].includes(status);
+  const canCancel = isClient
+    ? ["Active", "Paid", "Delivered"].includes(status)
+    : ["Active", "Delivered"].includes(status);
   const completedStep = (key: string) => {
     if (key === "hire" || key === "contract") return true;
     if (key === "payment") return ["Paid", "Delivered", "Completed"].includes(status);
